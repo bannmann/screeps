@@ -24,7 +24,7 @@ module.exports.loop = function() {
                         creep.moveTo(target);
                     }
                     else if (creep.carry.energy == creep.carryCapacity) {
-                        if (creepNumber % 5 == 0) {
+                        if (creepNumber % 5 == 0 && creep.room.energyAvailable < creep.room.energyCapacityAvailable) {
                             creep.memory.intent = INTENT.TRANSFER_TO_MY_STRUCTURE;
                         }
                         else {
@@ -68,8 +68,10 @@ module.exports.loop = function() {
         creepNumber++;
     }
 
-    for (var name in Game.spawns) {
-        var spawn = Game.spawns[name];
-        spawn.createCreep([WORK, MOVE, CARRY], undefined, {intent: INTENT.HARVEST_ENERGY});
+    if (creepNumber < 20) {
+        for (var name in Game.spawns) {
+            var spawn = Game.spawns[name];
+            spawn.createCreep([WORK, MOVE, CARRY], undefined, {intent: INTENT.HARVEST_ENERGY});
+        }
     }
 };
