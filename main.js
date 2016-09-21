@@ -25,10 +25,10 @@ module.exports.loop = function() {
                     }
                     else if (creep.carry.energy == creep.carryCapacity) {
                         if (creepNumber % 5 == 0) {
-                            creep.memory.intent = INTENT.TRANSFER_TO_CONTROLLER;
+                            creep.memory.intent = INTENT.TRANSFER_TO_MY_STRUCTURE;
                         }
                         else {
-                            creep.memory.intent = INTENT.TRANSFER_TO_MY_STRUCTURE;
+                            creep.memory.intent = INTENT.TRANSFER_TO_CONTROLLER;
                         }
                     }
                 }
