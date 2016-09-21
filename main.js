@@ -23,4 +23,9 @@ module.exports.loop = function() {
             }
         }
     }
+
+    for (var name in Game.spawns) {
+        var spawn = Game.spawns[name];
+        spawn.createCreep([WORK, MOVE, CARRY]);
+    }
 };
