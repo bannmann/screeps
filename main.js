@@ -1,17 +1,10 @@
-var INTENT = {
-    HARVEST_ENERGY: "HARVEST_ENERGY",
-    TRANSFER_TO_MY_STRUCTURE: "TRANSFER_TO_MY_STRUCTURE",
-    TRANSFER_TO_CONTROLLER: "TRANSFER_TO_CONTROLLER"
-};
+var INTENT = require("intent");
+var memoryCleaner = require("memoryCleaner");
+var spawnManager = require("spawnManager");
 
 module.exports.loop = function() {
-    for (var name in Memory.creeps) {
-        if (!Game.creeps[name]) {
-            delete Memory.creeps[name];
-        }
-    }
+    memoryCleaner.clean();
 
-    var creepNumber = 0;
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
 
@@ -67,14 +60,7 @@ module.exports.loop = function() {
                 }
                 break;
         }
-
-        creepNumber++;
     }
 
-    if (creepNumber < 20) {
-        for (var name in Game.spawns) {
-            var spawn = Game.spawns[name];
-            spawn.createCreep([WORK, MOVE, MOVE, CARRY], undefined, {intent: INTENT.HARVEST_ENERGY});
-        }
-    }
+    spawnManager.spawnCreepIfNecessary();
 };
