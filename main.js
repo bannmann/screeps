@@ -74,7 +74,7 @@ module.exports.loop = function() {
     if (creepNumber < 20) {
         for (var name in Game.spawns) {
             var spawn = Game.spawns[name];
-            spawn.createCreep([WORK, MOVE, CARRY], undefined, {intent: INTENT.HARVEST_ENERGY});
+            spawn.createCreep([WORK, MOVE, MOVE, CARRY], undefined, {intent: INTENT.HARVEST_ENERGY});
         }
     }
 };
