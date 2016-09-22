@@ -24,7 +24,7 @@ module.exports.loop = function() {
                         creep.moveTo(target);
                     }
                     else if (creep.carry.energy == creep.carryCapacity) {
-                        if (creepNumber % 5 == 0 && creep.room.energyAvailable < creep.room.energyCapacityAvailable) {
+                        if (creep.room.energyAvailable < creep.room.energyCapacityAvailable) {
                             creep.memory.intent = INTENT.TRANSFER_TO_MY_STRUCTURE;
                         }
                         else {
@@ -61,6 +61,9 @@ module.exports.loop = function() {
                     else if (creep.carry.energy == 0) {
                         creep.memory.intent = INTENT.HARVEST_ENERGY;
                     }
+                }
+                else {
+                    creep.memory.intent = INTENT.TRANSFER_TO_CONTROLLER;
                 }
                 break;
         }
