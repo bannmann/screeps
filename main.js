@@ -1,3 +1,4 @@
+require("prototypes")();
 var memoryCleaner = require("memoryCleaner");
 var intentManager = require("intentManager");
 var spawnManager = require("spawnManager");

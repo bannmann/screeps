@@ -12,9 +12,10 @@ module.exports = {
                     structure.structureType ==
                     STRUCTURE_SPAWN ||
                     structure.structureType ==
-                    STRUCTURE_TOWER) && structure.energy < structure.energyCapacity
+                    STRUCTURE_TOWER) && structure.needsEnergy()
                 });
             if (target) {
+                target.registerDelivery(creep);
                 creep.memory.intent = this.name;
                 creep.memory.target = target.id;
             }
@@ -25,6 +26,7 @@ module.exports = {
             creep.moveTo(target);
         }
         if (creep.carry.energy == 0) {
+            target.deregisterDelivery(creep);
             delete creep.memory.intent;
             delete creep.memory.target;
         }
