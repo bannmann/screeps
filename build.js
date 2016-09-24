@@ -12,7 +12,7 @@ module.exports = {
         if (creep.build(target) == ERR_NOT_IN_RANGE) {
             creep.moveTo(target);
         }
-        if (target.progress == target.progressTotal || creep.carry.energy == 0) {
+        if (!target || creep.carry.energy == 0) {
             delete creep.memory.intent;
             delete creep.memory.target;
         }
