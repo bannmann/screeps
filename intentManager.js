@@ -13,6 +13,12 @@ module.exports.processIntents = function() {
             }
         }
 
-        intents[creep.memory.intent].pursue(creep);
+        var intent = intents[creep.memory.intent];
+        if (intent) {
+            intent.pursue(creep);
+        }
+        else {
+            delete creep.memory.intent;
+        }
     }
 };
