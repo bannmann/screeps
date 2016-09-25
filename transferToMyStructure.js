@@ -25,7 +25,7 @@ module.exports = {
         if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
             creep.moveTo(target);
         }
-        if (creep.carry.energy == 0) {
+        if (creep.carry.energy == 0 || !target.needsEnergy()) {
             target.deregisterDelivery(creep);
             delete creep.memory.intent;
             delete creep.memory.target;
