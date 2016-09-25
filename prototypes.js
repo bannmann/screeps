@@ -21,7 +21,13 @@ module.exports = function() {
             }
             var expectedEnergy = 0;
             for (var creepId in this.memory.incomingDeliveries) {
-                expectedEnergy += this.memory.incomingDeliveries[creepId];
+                var creep = Game.getObjectById(creepId);
+                if (creep) {
+                    expectedEnergy += this.memory.incomingDeliveries[creepId];
+                }
+                else {
+                    delete this.memory.incomingDeliveries[creepId];
+                }
             }
             return expectedEnergy;
         };
