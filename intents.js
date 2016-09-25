@@ -6,10 +6,10 @@ var transferToController = require("transferToController");
 var idle = require("idle");
 
 module.exports = {
+    transferToMyStructure: transferToMyStructure,
     pickupEnergy: pickupEnergy,
     build: build,
     harvestEnergy: harvestEnergy,
-    transferToMyStructure: transferToMyStructure,
     transferToController: transferToController,
     idle: idle
 };
