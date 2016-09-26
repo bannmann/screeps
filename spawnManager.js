@@ -1,6 +1,6 @@
 module.exports.spawnCreepIfNecessary = function() {
     var creepCount = Object.keys(Game.creeps).length;
-    if (creepCount < 20) {
+    if (creepCount < 10) {
         for (var name in Game.spawns) {
             var spawn = Game.spawns[name];
             var creepSize = Math.floor(spawn.room.energyCapacityAvailable / 250);
