@@ -1,21 +1,46 @@
+var _ = require("lodash");
+
 module.exports.apply = function() {
-    function addEnergyManagement(prototype) {
-        prototype.needsEnergy = function() {
+    function addEnergyManagement(proto, memoryName) {
+        if (!proto.hasOwnProperty("memory")) {
+            Object.defineProperty(
+                proto, "memory", {
+                    get: function() {
+                        if (_.isUndefined(Memory[memoryName])) {
+                            Memory[memoryName] = {};
+                        }
+                        if (!_.isObject(Memory[memoryName])) {
+                            return undefined;
+                        }
+                        return Memory[memoryName][this.id] = Memory[memoryName][this.id] || {};
+                    }, set: function(value) {
+                        if (_.isUndefined(Memory[memoryName])) {
+                            Memory[memoryName] = {};
+                        }
+                        if (!_.isObject(Memory[memoryName])) {
+                            throw new Error("Could not set " + memoryName + " memory");
+                        }
+                        Memory[memoryName][this.id] = value;
+                    }
+                });
+        }
+
+        proto.needsEnergy = function() {
             return this.energy + this.calculateExpectedEnergy() < this.energyCapacity;
         };
-        prototype.registerDelivery = function(creep) {
+        proto.registerDelivery = function(creep) {
             if (!this.memory.incomingDeliveries) {
                 this.memory.incomingDeliveries = {};
             }
             this.memory.incomingDeliveries[creep.id] = creep.carry.energy;
         };
-        prototype.deregisterDelivery = function(creep) {
+        proto.deregisterDelivery = function(creep) {
             if (!this.memory.incomingDeliveries) {
                 this.memory.incomingDeliveries = {};
             }
             delete this.memory.incomingDeliveries[creep.id];
         };
-        prototype.calculateExpectedEnergy = function() {
+        proto.calculateExpectedEnergy = function() {
             if (!this.memory.incomingDeliveries) {
                 this.memory.incomingDeliveries = {};
             }
@@ -33,49 +58,7 @@ module.exports.apply = function() {
         };
     }
 
-    Object.defineProperty(
-        StructureExtension.prototype, 'memory', {
-            get: function() {
-                if (_.isUndefined(Memory.extensions)) {
-                    Memory.extensions = {};
-                }
-                if (!_.isObject(Memory.extensions)) {
-                    return undefined;
-                }
-                return Memory.extensions[this.id] = Memory.extensions[this.id] || {};
-            }, set: function(value) {
-                if (_.isUndefined(Memory.extensions)) {
-                    Memory.extensions = {};
-                }
-                if (!_.isObject(Memory.extensions)) {
-                    throw new Error('Could not set extensions memory');
-                }
-                Memory.extensions[this.id] = value;
-            }
-        });
-
-    Object.defineProperty(
-        StructureTower.prototype, 'memory', {
-            get: function() {
-                if (_.isUndefined(Memory.towers)) {
-                    Memory.towers = {};
-                }
-                if (!_.isObject(Memory.towers)) {
-                    return undefined;
-                }
-                return Memory.towers[this.id] = Memory.towers[this.id] || {};
-            }, set: function(value) {
-                if (_.isUndefined(Memory.towers)) {
-                    Memory.towers = {};
-                }
-                if (!_.isObject(Memory.towers)) {
-                    throw new Error('Could not set towers memory');
-                }
-                Memory.towers[this.id] = value;
-            }
-        });
-
-    addEnergyManagement(StructureExtension.prototype);
+    addEnergyManagement(StructureExtension.prototype, "extensions");
     addEnergyManagement(StructureSpawn.prototype);
-    addEnergyManagement(StructureTower.prototype);
+    addEnergyManagement(StructureTower.prototype, "towers");
 };
