@@ -1,4 +1,5 @@
-require("prototypes")();
+require("prototypeManager").applyPrototypes();
+
 var safeModeManager = require("safeModeManager");
 var memoryCleaner = require("memoryCleaner");
 var intentManager = require("intentManager");
