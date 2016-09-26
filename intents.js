@@ -1,9 +1,9 @@
-var pickupEnergy = require("pickupEnergy");
-var build = require("build");
-var harvestEnergy = require("harvestEnergy");
-var transferToMyStructure = require("transferToMyStructure");
-var transferToController = require("transferToController");
-var idle = require("idle");
+var pickupEnergy = require("intent_pickupEnergy");
+var build = require("intent_build");
+var harvestEnergy = require("intent_harvestEnergy");
+var transferToMyStructure = require("intent_transferToMyStructure");
+var transferToController = require("intent_transferToController");
+var idle = require("intent_idle");
 
 module.exports = {
     transferToMyStructure: transferToMyStructure,
