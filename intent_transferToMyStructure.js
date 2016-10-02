@@ -13,17 +13,19 @@ module.exports = {
                 STRUCTURE_TOWER) {
                 var path = creep.pos.findPathTo(structure, {ignoreCreeps: true});
 
-                var freeEnergy = structure.energyCapacity - structure.energy - structure.calculateExpectedEnergy();
+                var freeEnergy = structure.energyCapacity - structure.energy;
                 var importance = freeEnergy / structure.energyCapacity;
 
                 result.push(
                     {
-                        importance: importance, choose: function() {
-                        structure.registerDelivery(creep);
-                        creep.memory.intent = "transferToMyStructure";
-                        creep.memory.target = structure.id;
-                        creep.memory.path = Room.serializePath(path);
-                    }
+                        importance: importance,
+                        target: structure.id,
+                        path: Room.serializePath(path),
+                        choose: function() {
+                            creep.memory.intent = "transferToMyStructure";
+                            creep.memory.target = this.target;
+                            creep.memory.path = this.path;
+                        }
                     });
             }
         }
@@ -31,7 +33,9 @@ module.exports = {
     }, pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
         if (creep.memory.path) {
-            creep.moveByPath(creep.memory.path);
+            if (creep.moveByPath(creep.memory.path) != OK) {
+                creep.memory.path = creep.pos.findPathTo(target, {ignoreCreeps: true});
+            }
             if (creep.pos.getRangeTo(target) <= 1) {
                 delete creep.memory.path;
             }
@@ -39,7 +43,6 @@ module.exports = {
         else {
             creep.transfer(target, RESOURCE_ENERGY);
             if (creep.carry.energy == 0 || target.energy == target.energyCapacity) {
-                target.deregisterDelivery(creep);
                 delete creep.memory.intent;
                 delete creep.memory.target;
             }

@@ -19,11 +19,14 @@ module.exports = {
 
                 result.push(
                     {
-                        importance: importance, choose: function() {
-                        creep.memory.intent = "transferToController";
-                        creep.memory.target = structure.id;
-                        creep.memory.path = Room.serializePath(path);
-                    }
+                        importance: importance,
+                        target: structure.id,
+                        path: Room.serializePath(path),
+                        choose: function() {
+                            creep.memory.intent = "transferToController";
+                            creep.memory.target = this.target;
+                            creep.memory.path = this.path;
+                        }
                     });
             }
         }
@@ -31,7 +34,9 @@ module.exports = {
     }, pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
         if (creep.memory.path) {
-            creep.moveByPath(creep.memory.path);
+            if (creep.moveByPath(creep.memory.path) != OK) {
+                creep.memory.path = creep.pos.findPathTo(target, {ignoreCreeps: true});
+            }
             if (creep.pos.getRangeTo(target) <= 3) {
                 delete creep.memory.path;
             }
