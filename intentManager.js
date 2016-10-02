@@ -5,12 +5,21 @@ module.exports.processIntents = function() {
         var creep = Game.creeps[name];
 
         if (!creep.memory.intent) {
-            for (var intent in intents) {
-                intents[intent].ponder(creep);
-                if (creep.memory.intent) {
-                    break;
+            var possibilities = [];
+            for (var intentName in intents) {
+                var intent = intents[intentName];
+                if (intent.canBePerformedBy(creep)) {
+                    possibilities = possibilities.concat(intent.listPossibilities(creep));
                 }
             }
+            var possibility;
+            possibilities.forEach(
+                (current) => {
+                    if (!possibility || current.importance > possibility.importance) {
+                        possibility = current;
+                    }
+                });
+            possibility.choose();
         }
 
         var intent = intents[creep.memory.intent];

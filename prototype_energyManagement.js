@@ -25,9 +25,6 @@ module.exports.apply = function() {
                 });
         }
 
-        proto.needsEnergy = function() {
-            return this.energy + this.calculateExpectedEnergy() < this.energyCapacity;
-        };
         proto.registerDelivery = function(creep) {
             if (!this.memory.incomingDeliveries) {
                 this.memory.incomingDeliveries = {};
