@@ -1,5 +1,5 @@
 module.exports = {
-    canBePerformedBy: function(creep) {
+    range: 1, canBePerformedBy: function(creep) {
         return creep.getActiveBodyparts(MOVE) > 0 && creep.getActiveBodyparts(CARRY) > 0 && creep.carry.energy > 0;
     }, listPossibilities: function(creep) {
         var result = [];
@@ -14,7 +14,10 @@ module.exports = {
                 var path = creep.pos.findPathTo(structure, {ignoreCreeps: true});
 
                 var freeEnergy = structure.energyCapacity - structure.energy;
-                var importance = freeEnergy / structure.energyCapacity;
+                var importance = (
+                    freeEnergy / structure.energyCapacity) * (
+                    1 / (
+                    path.length - this.range));
 
                 result.push(
                     {
@@ -36,7 +39,7 @@ module.exports = {
             if (creep.moveByPath(creep.memory.path) != OK) {
                 creep.memory.path = creep.pos.findPathTo(target, {ignoreCreeps: true});
             }
-            if (creep.pos.getRangeTo(target) <= 1) {
+            if (creep.pos.getRangeTo(target) <= this.range) {
                 delete creep.memory.path;
             }
         }
