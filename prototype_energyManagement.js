@@ -1,30 +1,7 @@
 var _ = require("lodash");
 
 module.exports.apply = function() {
-    function addEnergyManagement(proto, memoryName) {
-        if (!proto.hasOwnProperty("memory")) {
-            Object.defineProperty(
-                proto, "memory", {
-                    get: function() {
-                        if (_.isUndefined(Memory[memoryName])) {
-                            Memory[memoryName] = {};
-                        }
-                        if (!_.isObject(Memory[memoryName])) {
-                            return undefined;
-                        }
-                        return Memory[memoryName][this.id] = Memory[memoryName][this.id] || {};
-                    }, set: function(value) {
-                        if (_.isUndefined(Memory[memoryName])) {
-                            Memory[memoryName] = {};
-                        }
-                        if (!_.isObject(Memory[memoryName])) {
-                            throw new Error("Could not set " + memoryName + " memory");
-                        }
-                        Memory[memoryName][this.id] = value;
-                    }
-                });
-        }
-
+    function apply(proto) {
         proto.registerDelivery = function(creep) {
             if (!this.memory.incomingDeliveries) {
                 this.memory.incomingDeliveries = {};
@@ -55,7 +32,7 @@ module.exports.apply = function() {
         };
     }
 
-    addEnergyManagement(StructureExtension.prototype, "extensions");
-    addEnergyManagement(StructureSpawn.prototype);
-    addEnergyManagement(StructureTower.prototype, "towers");
+    apply(StructureExtension.prototype);
+    apply(StructureSpawn.prototype);
+    apply(StructureTower.prototype);
 };

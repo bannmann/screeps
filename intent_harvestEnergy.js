@@ -1,5 +1,6 @@
 module.exports = {
-    range: 1, canBePerformedBy: function(creep) {
+    range: 1,
+    canBePerformedBy: function(creep) {
         return creep.getActiveBodyparts(MOVE) >
             0 &&
             creep.getActiveBodyparts(WORK) >
@@ -8,7 +9,8 @@ module.exports = {
             0 &&
             creep.carry.energy <
             creep.carryCapacity;
-    }, listPossibilities: function(creep) {
+    },
+    listPossibilities: function(creep) {
         var result = [];
         for (var roomId in Game.rooms) {
             var room = Game.rooms[roomId];
@@ -36,7 +38,8 @@ module.exports = {
                 });
         }
         return result;
-    }, pursue: function(creep) {
+    },
+    pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
         if (creep.carry.energy == creep.carryCapacity) {
             delete creep.memory.intent;
