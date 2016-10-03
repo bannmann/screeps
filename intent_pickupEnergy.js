@@ -26,12 +26,12 @@ module.exports = {
                     result.push(
                         {
                             importance: importance,
-                            target: droppedEnergy.id,
-                            path: Room.serializePath(path),
+                            target: droppedEnergy,
+                            path: path,
                             choose: function() {
                                 creep.memory.intent = "pickupEnergy";
-                                creep.memory.target = this.target;
-                                creep.memory.path = this.path;
+                                creep.memory.target = this.target.id;
+                                creep.memory.path = Room.serializePath(this.path);
                             }
                         });
                 });

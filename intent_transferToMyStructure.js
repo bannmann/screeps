@@ -15,7 +15,8 @@ module.exports = {
                 STRUCTURE_TOWER) {
                 var path = creep.pos.findPathTo(structure, {ignoreCreeps: true});
 
-                var freeEnergy = structure.energyCapacity - structure.energy;
+                var freeEnergy = structure.energyCapacity -
+                    Math.min(structure.energy + structure.calculateExpectedEnergy(), structure.energyCapacity);
                 var importance = (
                     freeEnergy / structure.energyCapacity) * (
                     1 / (
@@ -24,12 +25,13 @@ module.exports = {
                 result.push(
                     {
                         importance: importance,
-                        target: structure.id,
-                        path: Room.serializePath(path),
+                        target: structure,
+                        path: path,
                         choose: function() {
+                            this.target.registerDelivery(creep);
                             creep.memory.intent = "transferToMyStructure";
-                            creep.memory.target = this.target;
-                            creep.memory.path = this.path;
+                            creep.memory.target = this.target.id;
+                            creep.memory.path = Room.serializePath(this.path);
                         }
                     });
             }
@@ -39,6 +41,7 @@ module.exports = {
     pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
         if (creep.carry.energy == 0 || target.energy == target.energyCapacity) {
+            target.deregisterDelivery(creep);
             delete creep.memory.intent;
             delete creep.memory.target;
         }

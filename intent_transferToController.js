@@ -23,12 +23,12 @@ module.exports = {
                 result.push(
                     {
                         importance: importance,
-                        target: structure.id,
-                        path: Room.serializePath(path),
+                        target: structure,
+                        path: path,
                         choose: function() {
                             creep.memory.intent = "transferToController";
-                            creep.memory.target = this.target;
-                            creep.memory.path = this.path;
+                            creep.memory.target = this.target.id;
+                            creep.memory.path = Room.serializePath(this.path);
                         }
                     });
             }
