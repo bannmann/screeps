@@ -34,7 +34,11 @@ module.exports = {
         return result;
     }, pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
-        if (creep.memory.path) {
+        if (creep.carry.energy == 0) {
+            delete creep.memory.intent;
+            delete creep.memory.target;
+        }
+        else if (creep.memory.path) {
             if (creep.moveByPath(creep.memory.path) != OK) {
                 creep.memory.path = creep.pos.findPathTo(target, {ignoreCreeps: true});
             }
@@ -44,10 +48,6 @@ module.exports = {
         }
         else {
             creep.upgradeController(target);
-            if (creep.carry.energy == 0) {
-                delete creep.memory.intent;
-                delete creep.memory.target;
-            }
         }
     }
 };
