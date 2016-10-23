@@ -4,7 +4,7 @@ module.exports.processIntents = function() {
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
 
-        if (!creep.memory.intent) {
+        if (!creep.spawning && !creep.memory.intent) {
             var possibilities = [];
             for (var intentName in intents) {
                 var intent = intents[intentName];
