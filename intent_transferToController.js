@@ -1,3 +1,5 @@
+var moveAction = require("action_move");
+
 module.exports = {
     range: 3,
     canBePerformedBy: function(creep) {
@@ -28,7 +30,8 @@ module.exports = {
                         choose: function() {
                             creep.memory.intent = "transferToController";
                             creep.memory.target = this.target.id;
-                            creep.memory.path = Room.serializePath(this.path);
+
+                            moveAction.start(creep, this.path);
                         }
                     });
             }
@@ -41,13 +44,8 @@ module.exports = {
             delete creep.memory.intent;
             delete creep.memory.target;
         }
-        else if (creep.memory.path) {
-            if (creep.moveByPath(creep.memory.path) != OK) {
-                creep.memory.path = creep.pos.findPathTo(target, {ignoreCreeps: true});
-            }
-            if (creep.pos.getRangeTo(target) <= this.range) {
-                delete creep.memory.path;
-            }
+        else if (moveAction.isActive(creep)) {
+            moveAction.perform(creep, this);
         }
         else {
             creep.upgradeController(target);
