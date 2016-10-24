@@ -1,6 +1,6 @@
 module.exports.spawnCreepIfNecessary = function() {
-    var creepCount = Object.keys(Game.creeps).length;
-    if (creepCount < 10) {
+    if (shouldSpawnCreeps()) {
+        var spawned = false;
         for (var name in Game.spawns) {
             var spawn = Game.spawns[name];
             var creepSize = Math.floor(spawn.room.energyCapacityAvailable / 250);
@@ -17,7 +17,37 @@ module.exports.spawnCreepIfNecessary = function() {
                     body.push(MOVE);
                 }
                 spawn.createCreep(body);
+                spawned = true;
             }
         }
+        if (spawned) {
+            console.log("Spawned more creeps, now at " + getCreepCount());
+        }
+    }
+
+    function shouldSpawnCreeps() {
+        var result;
+        if (simulationModeActive()) {
+            result = belowSimulationCreepCount();
+        } else {
+            result = cpuUsageTooLow();
+        }
+        return result;
+    }
+
+    function simulationModeActive() {
+        return Game.cpu.getUsed() == 0;
+    }
+
+    function cpuUsageTooLow() {
+        return Game.cpu.getUsed() < Game.cpu.tickLimit * 0.8;
+    }
+
+    function belowSimulationCreepCount() {
+        return getCreepCount() < 10;
+    }
+
+    function getCreepCount() {
+        return Object.keys(Game.creeps).length;
     }
 };
