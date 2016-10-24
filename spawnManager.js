@@ -40,7 +40,7 @@ module.exports.spawnCreepIfNecessary = function() {
     }
 
     function cpuUsageTooLow() {
-        return Game.cpu.getUsed() < Game.cpu.tickLimit * 0.8;
+        return Game.cpu.getUsed() < Game.cpu.limit * 0.8;
     }
 
     function belowSimulationCreepCount() {
