@@ -1,5 +1,6 @@
 require("prototypeManager").applyPrototypes();
 
+var moveAction = require("action_move");
 var safeModeManager = require("safeModeManager");
 var memoryCleaner = require("memoryCleaner");
 var intentManager = require("intentManager");
@@ -10,4 +11,6 @@ module.exports.loop = function() {
     memoryCleaner.clean();
     intentManager.processIntents();
     spawnManager.spawnCreepIfNecessary();
+
+    moveAction.savePauseStats();
 };
