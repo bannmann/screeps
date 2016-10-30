@@ -1,3 +1,5 @@
+var spawnManager = require("spawnManager");
+
 module.exports = {
     canBePerformedBy: function(creep) {
         return true;
@@ -15,6 +17,7 @@ module.exports = {
     },
     pursue: function(creep) {
         creep.say("Zzzzzz....");
+        spawnManager.registerIdleCreep();
         delete creep.memory.intent;
     }
 };

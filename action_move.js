@@ -44,7 +44,9 @@ module.exports = {
 
     start: function(creep, path) {
         creep.memory.movementStatus = {
-            pauseDuration: 0, lastPosition: null, path: Room.serializePath(path)
+            pauseDuration: 0,
+            lastPosition: null,
+            path: Room.serializePath(path)
         };
     },
 
