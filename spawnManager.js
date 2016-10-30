@@ -44,7 +44,7 @@ module.exports.spawnCreepIfNecessary = function() {
     }
 
     function belowSimulationCreepCount() {
-        return getCreepCount() < 10;
+        return getCreepCount() < 20;
     }
 
     function getCreepCount() {
