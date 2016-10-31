@@ -1,12 +1,21 @@
-module.exports = {
-    idleCreepCount: 0,
+const MAX_CREEP_COUNT_LIST_LENGTH = 10;
+const ACCEPTABLE_IDLE_CREEPS = 0;
 
-    reset: function() {
-        this.idleCreepCount = 0;
+module.exports = {
+    idleCreepCountList: Memory["IdleCreepCounts"] || [],
+    currentIdleCreepCount: 0,
+
+    saveIdleCreepCount: function() {
+        this.idleCreepCountList.push(this.currentIdleCreepCount);
+
+        while (this.idleCreepCountList.length > MAX_CREEP_COUNT_LIST_LENGTH) {
+            this.idleCreepCountList.shift();
+        }
+        Memory["IdleCreepCounts"] = this.idleCreepCountList;
     },
 
     registerIdleCreep: function() {
-        this.idleCreepCount++;
+        this.currentIdleCreepCount++;
     },
 
     spawnCreepIfNecessary: function() {
@@ -39,7 +48,7 @@ module.exports = {
     },
 
     currentCreepsAreBusy: function() {
-        return this.idleCreepCount == 0;
+        return !this.idleCreepCountList.find(function(element) {return element > ACCEPTABLE_IDLE_CREEPS});
     },
 
     moreCreepsPossible: function() {

@@ -7,8 +7,6 @@ var intentManager = require("intentManager");
 var spawnManager = require("spawnManager");
 
 module.exports.loop = function() {
-    spawnManager.reset();
-
     safeModeManager.manage();
     memoryCleaner.clean();
     intentManager.processIntents();
@@ -16,4 +14,5 @@ module.exports.loop = function() {
     spawnManager.spawnCreepIfNecessary();
 
     moveAction.savePauseStats();
+    spawnManager.saveIdleCreepCount();
 };
