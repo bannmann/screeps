@@ -17,20 +17,21 @@ module.exports = {
             var droppedEnergies = room.find(FIND_DROPPED_ENERGY);
             droppedEnergies.forEach(
                 (droppedEnergy) => {
+                    var carryCapacity = creep.carryCapacity;
+                    var droppedAmount = droppedEnergy.energy;
+
                     var path = creep.pos.findPathTo(droppedEnergy, {ignoreCreeps: true});
 
-                    var freeCapacity = creep.carryCapacity - creep.carry.energy;
-                    var importance = (
-                        Math.min(droppedEnergy.energy, freeCapacity) / freeCapacity) * (
-                        1 / (
-                        path.length - this.range));
+                    // Don't calculate a factor > 1 if there's more energy than the creep can carry
+                    var valuable = Math.min(droppedAmount, carryCapacity) / carryCapacity;
+
+                    var shortDistance = 1 / (path.length - this.range);
+
+                    var importance = 0.8 + valuable * 0.05 + shortDistance * 0.05;
 
                     result.push(
                         {
-                            importance: importance,
-                            target: droppedEnergy,
-                            path: path,
-                            choose: function() {
+                            importance: importance, target: droppedEnergy, path: path, choose: function() {
                                 creep.memory.intent = "pickupEnergy";
                                 creep.memory.target = this.target.id;
 

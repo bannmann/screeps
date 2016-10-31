@@ -22,10 +22,9 @@ module.exports = {
                     if (!moveAction.isTargetJammed(source.id)) {
                         var path = creep.pos.findPathTo(source, {ignoreCreeps: true});
 
-                        var importance = (
-                            source.energy / source.energyCapacity) * (
-                            1 / (
-                            path.length - this.range));
+                        var shortDistance = 1 / (path.length - this.range);
+                        var muchEnergyLeft = source.energy / source.energyCapacity;
+                        var importance = 0.7 + shortDistance * 0.1 + muchEnergyLeft * 0.05;
 
                         result.push(
                             {

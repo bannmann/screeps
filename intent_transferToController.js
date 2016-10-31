@@ -1,3 +1,5 @@
+const TICKS_TO_DOWNGRADE_THRESHOLD = 100;
+
 var moveAction = require("action_move");
 
 module.exports = {
@@ -19,8 +21,13 @@ module.exports = {
             if (structure.structureType == STRUCTURE_CONTROLLER) {
                 var path = creep.pos.findPathTo(structure, {ignoreCreeps: true});
 
-                var importance = Math.min(path.length - this.range + 1, structure.ticksToDowngrade) /
-                    structure.ticksToDowngrade;
+                var shortDistance = 1 / (path.length - this.range);
+
+                // Increase panic level as ticksToDowngrade approaches threshold, but never surpass 1
+                var panicLevel = TICKS_TO_DOWNGRADE_THRESHOLD / Math.max(structure.ticksToDowngrade, TICKS_TO_DOWNGRADE_THRESHOLD);
+
+                // Usually, this intent is unimportant, but when it panics, it's very, very important
+                var importance = 0.1 + shortDistance * 0.1 + panicLevel * 0.7;
 
                 result.push(
                     {

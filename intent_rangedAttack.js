@@ -1,5 +1,3 @@
-var moveAction = require("action_move");
-
 module.exports = {
     range: 3,
     canBePerformedBy: function(creep) {
@@ -17,7 +15,8 @@ module.exports = {
                 (enemy) => {
                     var path = creep.pos.findPathTo(enemy, {ignoreCreeps: true});
 
-                    var importance = 1 / (path.length - this.range);
+                    var shortDistance = 1 / (path.length - this.range);
+                    var importance = 0.8 + shortDistance * 0.1;
 
                     result.push(
                         {

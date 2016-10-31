@@ -15,14 +15,15 @@ module.exports = {
                 STRUCTURE_SPAWN ||
                 structure.structureType ==
                 STRUCTURE_TOWER) {
-                var path = creep.pos.findPathTo(structure, {ignoreCreeps: true});
 
                 var freeEnergy = structure.energyCapacity -
                     Math.min(structure.energy + structure.calculateExpectedEnergy(), structure.energyCapacity);
-                var importance = (
-                    freeEnergy / structure.energyCapacity) * (
-                    1 / (
-                    path.length - this.range));
+                var needsMuchEnergy = freeEnergy / structure.energyCapacity;
+
+                var path = creep.pos.findPathTo(structure, {ignoreCreeps: true});
+                var shortDistance = 1 / (path.length - this.range);
+
+                var importance = 0.3 + needsMuchEnergy * 0.1 + shortDistance * 0.05;
 
                 result.push(
                     {
