@@ -17,10 +17,9 @@ module.exports = {
 
             var path = creep.pos.findPathTo(constructionSite, {ignoreCreeps: true});
 
-            var importance = (
-                constructionSite.progress / constructionSite.progressTotal) * (
-                1 / (
-                path.length - this.range));
+            var progress = (constructionSite.progress + 1) / (constructionSite.progressTotal + 1);
+            var distance = 1 / (path.length - this.range);
+            var importance = progress * distance;
 
             result.push(
                 {
