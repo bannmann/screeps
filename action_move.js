@@ -1,4 +1,4 @@
-const ACCEPTABLE_PAUSE = 2;
+const ACCEPTABLE_PAUSE = 1;
 const ACCEPTABLE_DETOUR_FACTOR = 2;
 const ACCEPTABLE_PAUSES_PER_TARGET = 1;
 const MAX_PAUSE_LIST_LENGTH = 10;
@@ -73,17 +73,16 @@ module.exports = {
             status.pauseDuration = 0;
         }
 
-        if (status.pauseDuration >= ACCEPTABLE_PAUSE) {
-            var optimalPath = creep.pos.findPathTo(target, {ignoreCreeps: true});
+        if (status.pauseDuration > ACCEPTABLE_PAUSE) {
             var creepCausedDetour = creep.pos.findPathTo(target, {ignoreCreeps: false});
             if (creepCausedDetour.length == 0) {
                 // blocked by other creep
             }
-            else if (creepCausedDetour.length < optimalPath.length * ACCEPTABLE_DETOUR_FACTOR) {
-                status.path = Room.serializePath(creepCausedDetour);
-            }
             else {
-
+                var optimalPath = creep.pos.findPathTo(target, {ignoreCreeps: true});
+                if (creepCausedDetour.length <= optimalPath.length * ACCEPTABLE_DETOUR_FACTOR) {
+                    status.path = Room.serializePath(creepCausedDetour);
+                }
             }
         }
 
