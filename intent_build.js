@@ -9,6 +9,8 @@ module.exports = {
             0 &&
             creep.getActiveBodyparts(CARRY) >
             0 &&
+            // avoid sucking up all creeps for building, leave some for 'transferToMyStructure' intent
+            creep.belongsToGroup(0, 2) &&
             creep.carry.energy >
             0;
     },
