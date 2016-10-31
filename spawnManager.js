@@ -14,6 +14,7 @@ module.exports = {
             this.idleCreepCountList.shift();
         }
         Memory["IdleCreepCounts"] = this.idleCreepCountList;
+        this.currentIdleCreepCount = 0;
     },
 
     registerIdleCreep: function() {
