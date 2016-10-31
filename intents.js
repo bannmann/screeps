@@ -3,6 +3,7 @@ var build = require("intent_build");
 var harvestEnergy = require("intent_harvestEnergy");
 var transferToMyStructure = require("intent_transferToMyStructure");
 var transferToController = require("intent_transferToController");
+var rangedAttack = require("intent_rangedAttack");
 var idle = require("intent_idle");
 
 module.exports = {
@@ -11,5 +12,6 @@ module.exports = {
     build: build,
     harvestEnergy: harvestEnergy,
     transferToController: transferToController,
+    rangedAttack: rangedAttack,
     idle: idle
 };

@@ -1,6 +1,8 @@
 const MAX_CREEP_COUNT_LIST_LENGTH = 10;
 const ACCEPTABLE_IDLE_CREEPS = 0;
 
+var bodies = require("bodies");
+
 module.exports = {
     idleCreepCountList: Memory["IdleCreepCounts"] || [],
     currentIdleCreepCount: 0,
@@ -20,24 +22,31 @@ module.exports = {
 
     spawnCreepIfNecessary: function() {
         if (this.shouldSpawnCreeps()) {
-            var spawned = false;
+            var plan = null;
             for (var name in Game.spawns) {
                 var spawn = Game.spawns[name];
-                var creepSize = Math.floor(spawn.room.energyCapacityAvailable / 250);
-                if (spawn.room.energyAvailable >= creepSize * 250) {
-                    var body = [];
-                    for (var i = 0; i < creepSize; i++) {
-                        body.push(WORK);
+
+                for (var bodyName in bodies) {
+                    var body = bodies[bodyName];
+                    var importance = body.getCurrentImportance(spawn);
+
+                    if (importance > 0 && (!plan || importance > plan.importance)) {
+                        plan = {
+                            importance: importance,
+                            body: body,
+                            bodyName: bodyName,
+                            spawn: spawn
+                        };
                     }
-                    for (var i = 0; i < creepSize; i++) {
-                        body.push(CARRY);
-                    }
-                    for (var i = 0; i < creepSize; i++) {
-                        body.push(MOVE);
-                        body.push(MOVE);
-                    }
-                    spawn.createCreep(body);
-                    spawned = true;
+                }
+            }
+
+            if (plan) {
+                var room = spawn.room;
+                var body = plan.body;
+                var spawn = plan.spawn;
+                if (room.energyAvailable >= body.getCost(room)) {
+                    spawn.createCreep(body.getConfiguration(room), undefined, {type: plan.bodyName});
                 }
             }
         }
