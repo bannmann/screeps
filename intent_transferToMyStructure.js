@@ -1,4 +1,8 @@
+// If we have fewer creeps, this intent is more important than anything else, or we'll never spawn more creeps
+const CREEP_COUNT_THRESHOLD = 5;
+
 var moveAction = require("action_move");
+var spawnManager = require("spawnManager");
 
 module.exports = {
     range: 1,
@@ -23,7 +27,9 @@ module.exports = {
                 var path = creep.pos.findPathTo(structure, {ignoreCreeps: true});
                 var shortDistance = 1 / (path.length - this.range);
 
-                var importance = 0.3 + needsMuchEnergy * 0.1 + shortDistance * 0.05;
+                var fewCreepsActive = (spawnManager.getCreepCount() < CREEP_COUNT_THRESHOLD) * 1;
+
+                var importance = 0.3 + fewCreepsActive * 0.5 + needsMuchEnergy * 0.1 + shortDistance * 0.05;
 
                 result.push(
                     {

@@ -2,7 +2,7 @@ const BASE_IMPORTANCE = 0.8;
 const DEFENSE_FACTOR = 2;
 
 module.exports = {
-    getCurrentImportance: function(spawn) {
+    getCurrentImportance: function(spawn, spawnManager) {
         var result = 0;
 
         var enemies = spawn.room.find(FIND_HOSTILE_CREEPS);
@@ -16,11 +16,11 @@ module.exports = {
 
         return result;
     },
-    getCost: function(room) {
+    getCost: function(room, spawnManager) {
         var capacity = room.energyCapacityAvailable;
         return capacity - (capacity % 260);
     },
-    getConfiguration(room) {
+    getConfiguration(room, spawnManager) {
         var creepSize = Math.floor(room.energyCapacityAvailable / 260);
         var configuration = [];
         for (var i = 0; i < creepSize; i++) {

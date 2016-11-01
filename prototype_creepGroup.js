@@ -13,17 +13,19 @@ module.exports.apply = function() {
         return hash;
     }
 
-    Object.defineProperty(
-        Creep.prototype, "idHash", {
-            get: function() {
-                var result = this.memory.idHash;
-                if (!result) {
-                    result = calculateHash(this.id);
-                    this.memory.idHash = result;
+    if (!Creep.prototype.hasOwnProperty("idHash")) {
+        Object.defineProperty(
+            Creep.prototype, "idHash", {
+                get: function() {
+                    var result = this.memory.idHash;
+                    if (!result) {
+                        result = calculateHash(this.id);
+                        this.memory.idHash = result;
+                    }
+                    return result;
                 }
-                return result;
-            }
-        });
+            });
+    }
 
     Creep.prototype.belongsToGroup = function(group, groupCount) {
         return this.idHash % groupCount == group;

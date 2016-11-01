@@ -29,7 +29,7 @@ module.exports = {
 
                 for (var bodyName in bodies) {
                     var body = bodies[bodyName];
-                    var importance = body.getCurrentImportance(spawn);
+                    var importance = body.getCurrentImportance(spawn, this);
 
                     if (importance > 0 && (!plan || importance > plan.importance)) {
                         plan = {
@@ -46,8 +46,8 @@ module.exports = {
                 var room = spawn.room;
                 var body = plan.body;
                 var spawn = plan.spawn;
-                if (room.energyAvailable >= body.getCost(room)) {
-                    spawn.createCreep(body.getConfiguration(room), undefined, {type: plan.bodyName});
+                if (room.energyAvailable >= body.getCost(room, this)) {
+                    spawn.createCreep(body.getConfiguration(room, this), undefined, {type: plan.bodyName});
                 }
             }
         }
