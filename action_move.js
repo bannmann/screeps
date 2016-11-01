@@ -49,8 +49,6 @@ module.exports = {
                 lastPosition: null,
                 path: Room.serializePath(path)
             };
-        } else {
-            console.log(creep.name + " doesn't need to move, already there")
         }
     },
 
