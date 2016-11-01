@@ -23,28 +23,30 @@ module.exports = {
 
                 var freeEnergy = structure.energyCapacity -
                     Math.min(structure.energy + structure.calculateExpectedEnergy(), structure.energyCapacity);
-                var needsMuchEnergy = freeEnergy / structure.energyCapacity;
+                if (freeEnergy > 0) {
+                    var needsMuchEnergy = freeEnergy / structure.energyCapacity;
 
-                var path = creep.pos.findPathTo(structure, {ignoreCreeps: true});
-                var shortDistance = 1 / (path.length - this.range);
+                    var path = creep.pos.findPathTo(structure, {ignoreCreeps: true});
+                    var shortDistance = 1 / (path.length - this.range);
 
-                var fewCreepsActive = (spawnManager.getCreepCount() < CREEP_COUNT_THRESHOLD) * 1;
+                    var fewCreepsActive = (spawnManager.getCreepCount() < CREEP_COUNT_THRESHOLD) * 1;
 
-                var importance = 0.3 + fewCreepsActive * 0.5 + needsMuchEnergy * 0.1 + shortDistance * 0.05;
+                    var importance = 0.3 + fewCreepsActive * 0.5 + needsMuchEnergy * 0.1 + shortDistance * 0.05;
 
-                result.push(
-                    {
-                        importance: importance,
-                        target: structure,
-                        path: path,
-                        choose: function() {
-                            this.target.registerDelivery(creep);
-                            creep.memory.intent = "transferToMyStructure";
-                            creep.memory.target = this.target.id;
+                    result.push(
+                        {
+                            importance: importance,
+                            target: structure,
+                            path: path,
+                            choose: function() {
+                                this.target.registerDelivery(creep);
+                                creep.memory.intent = "transferToMyStructure";
+                                creep.memory.target = this.target.id;
 
-                            moveAction.start(creep, this.path, thisIntent);
-                        }
-                    });
+                                moveAction.start(creep, this.path, thisIntent);
+                            }
+                        });
+                }
             }
         }
         return result;
