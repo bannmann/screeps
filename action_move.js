@@ -42,12 +42,20 @@ module.exports = {
         this.currentTickCreepPauses = {};
     },
 
-    start: function(creep, path) {
-        creep.memory.movementStatus = {
-            pauseDuration: 0,
-            lastPosition: null,
-            path: Room.serializePath(path)
-        };
+    start: function(creep, path, intent) {
+        if (this.isMovementNeeded(creep, path, intent)) {
+            creep.memory.movementStatus = {
+                pauseDuration: 0,
+                lastPosition: null,
+                path: Room.serializePath(path)
+            };
+        } else {
+            console.log(creep.name + " doesn't need to move, already there")
+        }
+    },
+
+    isMovementNeeded(creep, path, intent) {
+        return path.length > 1 || !creep.pos.inRangeTo(path[0].x, path[0].y, intent.range);
     },
 
     isActive: function(creep) {

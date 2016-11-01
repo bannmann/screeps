@@ -12,6 +12,7 @@ module.exports = {
     },
     listPossibilities: function(creep) {
         var result = [];
+        var thisIntent = this;
         for (var roomId in Game.rooms) {
             var room = Game.rooms[roomId];
             var droppedEnergies = room.find(FIND_DROPPED_ENERGY);
@@ -35,7 +36,7 @@ module.exports = {
                                 creep.memory.intent = "pickupEnergy";
                                 creep.memory.target = this.target.id;
 
-                                moveAction.start(creep, this.path);
+                                moveAction.start(creep, this.path, thisIntent);
                             }
                         });
                 });

@@ -16,6 +16,7 @@ module.exports = {
     },
     listPossibilities: function(creep) {
         var result = [];
+        var thisIntent = this;
         for (var constructionSiteId in Game.constructionSites) {
             var constructionSite = Game.constructionSites[constructionSiteId];
 
@@ -34,7 +35,7 @@ module.exports = {
                         creep.memory.intent = "build";
                         creep.memory.target = this.target.id;
 
-                        moveAction.start(creep, this.path);
+                        moveAction.start(creep, this.path, thisIntent);
                     }
                 });
         }

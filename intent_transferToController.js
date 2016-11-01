@@ -16,6 +16,7 @@ module.exports = {
     },
     listPossibilities: function(creep) {
         var result = [];
+        var thisIntent = this;
         for (var structureId in Game.structures) {
             var structure = Game.structures[structureId];
             if (structure.structureType == STRUCTURE_CONTROLLER) {
@@ -38,7 +39,7 @@ module.exports = {
                             creep.memory.intent = "transferToController";
                             creep.memory.target = this.target.id;
 
-                            moveAction.start(creep, this.path);
+                            moveAction.start(creep, this.path, thisIntent);
                         }
                     });
             }
