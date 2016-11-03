@@ -1,7 +1,7 @@
 const MAX_CREEP_COUNT_LIST_LENGTH = 10;
 const ACCEPTABLE_IDLE_CREEPS = 0;
 
-var bodies = require("bodies");
+var races = require("races");
 
 module.exports = {
     idleCreepCountList: Memory["IdleCreepCounts"] || [],
@@ -27,15 +27,15 @@ module.exports = {
             for (var name in Game.spawns) {
                 var spawn = Game.spawns[name];
 
-                for (var bodyName in bodies) {
-                    var body = bodies[bodyName];
-                    var importance = body.getCurrentImportance(spawn, this);
+                for (var raceName in races) {
+                    var race = races[raceName];
+                    var importance = race.getCurrentImportance(spawn, this);
 
                     if (importance > 0 && (!plan || importance > plan.importance)) {
                         plan = {
                             importance: importance,
-                            body: body,
-                            bodyName: bodyName,
+                            race: race,
+                            raceName: raceName,
                             spawn: spawn
                         };
                     }
@@ -44,10 +44,10 @@ module.exports = {
 
             if (plan) {
                 var room = spawn.room;
-                var body = plan.body;
+                var race = plan.race;
                 var spawn = plan.spawn;
-                if (room.energyAvailable >= body.getCost(room, this)) {
-                    spawn.createCreep(body.getConfiguration(room, this), undefined, {type: plan.bodyName});
+                if (room.energyAvailable >= race.getCost(room, this)) {
+                    spawn.createCreep(race.getBody(room, this), undefined, {race: plan.raceName});
                 }
             }
         }

@@ -11,7 +11,7 @@ module.exports = {
     getCost: function(room, spawnManager) {
         return this.getAppropriateCreepSize(room, spawnManager) * COST_PER_SIZE;
     },
-    getConfiguration(room, spawnManager) {
+    getBody: function(room, spawnManager) {
         var creepSize = this.getAppropriateCreepSize(room, spawnManager);
 
         var configuration = [];
