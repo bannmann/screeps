@@ -9,8 +9,7 @@ module.exports = {
             0 &&
             creep.getActiveBodyparts(CARRY) >
             0 &&
-            creep.carry.energy <
-            creep.carryCapacity;
+            creep.carry.energy == 0;
     },
     listPossibilities: function(creep) {
         var result = [];
