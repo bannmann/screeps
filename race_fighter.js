@@ -1,5 +1,6 @@
 const BASE_IMPORTANCE = 0.8;
 const DEFENSE_FACTOR = 2;
+const BASE_COST = 260;
 
 module.exports = {
     getCurrentImportance: function(spawn, spawnManager) {
@@ -17,11 +18,11 @@ module.exports = {
         return result;
     },
     getCost: function(room, spawnManager) {
-        var capacity = room.energyCapacityAvailable;
-        return capacity - (capacity % 260);
+        var energy = room.energyAvailable;
+        return Math.max(BASE_COST, energy - (energy % BASE_COST));
     },
     getBody: function(room, spawnManager) {
-        var creepSize = Math.floor(room.energyCapacityAvailable / 260);
+        var creepSize = Math.floor(room.energyAvailable / BASE_COST);
         var configuration = [];
         for (var i = 0; i < creepSize; i++) {
             configuration.push(TOUGH);
