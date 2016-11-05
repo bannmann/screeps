@@ -11,7 +11,10 @@ module.exports = {
         var thisIntent = this;
         for (var roomId in Game.rooms) {
             var room = Game.rooms[roomId];
-            var droppedEnergies = room.find(FIND_DROPPED_ENERGY);
+            var droppedEnergies = room.find(FIND_DROPPED_ENERGY, {
+                // Avoid picking up energy on room exit tiles as it makes creeps oscillate between two rooms.
+                filter: (drop) => !this.placedOnRoomExit(drop)
+            });
             droppedEnergies.forEach(
                 (droppedEnergy) => {
                     var carryCapacity = creep.carryCapacity;
@@ -38,6 +41,9 @@ module.exports = {
                 });
         }
         return result;
+    },
+    placedOnRoomExit: function(roomObject) {
+        return roomObject.pos.x == 0 || roomObject.pos.y == 0 || roomObject.pos.x == 49 || roomObject.pos.y == 49;
     },
     pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
