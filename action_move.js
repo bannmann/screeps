@@ -53,12 +53,7 @@ module.exports = {
     },
 
     isMovementNeeded(creep, path, intent) {
-        try {
-            return path.length > 1 || !creep.pos.inRangeTo(path[0].x, path[0].y, intent.range);
-        } catch(e) {
-            Game.notify("isMovementNeeded: path is ***" + JSON.stringify(path) + "***, intent=" + intent + ", movementStatus ***" + JSON.stringify(creep.memory.movementStatus) + "***, \ne=" + e);
-            return false;
-        }
+        return path.length > 1 || path.length == 1 && !creep.pos.inRangeTo(path[0].x, path[0].y, intent.range);
     },
 
     isActive: function(creep) {
