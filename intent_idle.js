@@ -8,7 +8,7 @@ module.exports = {
         var result = [];
         result.push(
             {
-                importance: Number.MIN_VALUE,
+                importance: 0,
                 choose: function() {
                     creep.memory.intent = "idle";
                 }

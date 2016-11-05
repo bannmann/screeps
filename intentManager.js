@@ -9,12 +9,18 @@ module.exports.processIntents = function() {
             for (var intentName in intents) {
                 var intent = intents[intentName];
                 if (intent.canBePerformedBy(creep)) {
-                    possibilities = possibilities.concat(intent.listPossibilities(creep));
+                    var intentPossibilities = intent.listPossibilities(creep);
+                    possibilities = possibilities.concat(intentPossibilities);
                 }
             }
             var possibility;
             possibilities.forEach(
                 (current) => {
+                    if (current.importance < 0 || current.importance > 1) {
+                        Game.notify("Illegal importance value of " + current.importance + " for possibility choice " + current.choose);
+                        current.importance = 0;
+                    }
+
                     if (!possibility || current.importance > possibility.importance) {
                         possibility = current;
                     }
