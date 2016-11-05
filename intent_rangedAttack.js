@@ -1,10 +1,7 @@
 module.exports = {
     range: 3,
     canBePerformedBy: function(creep) {
-        return creep.getActiveBodyparts(MOVE) >
-            0 &&
-            creep.getActiveBodyparts(RANGED_ATTACK) >
-            0;
+        return creep.hasActiveBodyparts(MOVE, RANGED_ATTACK);
     },
     listPossibilities: function(creep) {
         var result = [];

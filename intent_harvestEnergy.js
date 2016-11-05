@@ -3,13 +3,7 @@ var moveAction = require("action_move");
 module.exports = {
     range: 1,
     canBePerformedBy: function(creep) {
-        return creep.getActiveBodyparts(MOVE) >
-            0 &&
-            creep.getActiveBodyparts(WORK) >
-            0 &&
-            creep.getActiveBodyparts(CARRY) >
-            0 &&
-            creep.carry.energy == 0;
+        return creep.hasActiveBodyparts(MOVE, WORK, CARRY) && creep.carry.energy == 0;
     },
     listPossibilities: function(creep) {
         var result = [];

@@ -32,15 +32,11 @@ module.exports = {
         var result = null;
         enemies.forEach(
             (enemy) => {
-                if (!result || this.isHealer(enemy) && !this.isHealer(result) || enemy.hits < result.hits) {
+                if (!result || enemy.canHeal && !result.canHeal || enemy.hits < result.hits) {
                     result = enemy;
                 }
             });
         return result;
-    },
-
-    isHealer: function(creep) {
-        return creep.getActiveBodyparts(HEAL) > 0;
     },
 
     healCreeps: function(tower) {

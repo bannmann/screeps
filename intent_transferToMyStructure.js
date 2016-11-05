@@ -7,7 +7,7 @@ var spawnManager = require("spawnManager");
 module.exports = {
     range: 1,
     canBePerformedBy: function(creep) {
-        return creep.getActiveBodyparts(MOVE) > 0 && creep.getActiveBodyparts(CARRY) > 0 && creep.carry.energy > 0;
+        return creep.hasActiveBodyparts(MOVE, CARRY) > 0 && creep.carry.energy > 0;
     },
     listPossibilities: function(creep) {
         var result = [];
