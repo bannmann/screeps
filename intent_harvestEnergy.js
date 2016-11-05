@@ -1,4 +1,5 @@
 var moveAction = require("action_move");
+var intentsUtil = require("util_intents");
 
 module.exports = {
     range: 1,
@@ -16,7 +17,7 @@ module.exports = {
                     if (!moveAction.isTargetJammed(source.id)) {
                         var path = creep.pos.findPathTo(source, {ignoreCreeps: true});
 
-                        var shortDistance = 1 / (path.length - this.range);
+                        var shortDistance = intentsUtil.getShortDistanceFactor(path, this.range);
                         var muchEnergyLeft = source.energy / source.energyCapacity;
                         var importance = 0.7 + shortDistance * 0.1 + muchEnergyLeft * 0.05;
 

@@ -1,6 +1,7 @@
 const TICKS_TO_DOWNGRADE_THRESHOLD = 100;
 
 var moveAction = require("action_move");
+var intentsUtil = require("util_intents");
 
 module.exports = {
     range: 3,
@@ -15,7 +16,7 @@ module.exports = {
             if (structure.structureType == STRUCTURE_CONTROLLER) {
                 var path = creep.pos.findPathTo(structure, {ignoreCreeps: true});
 
-                var shortDistance = 1 / (path.length - this.range);
+                var shortDistance = intentsUtil.getShortDistanceFactor(path, this.range);
 
                 // Increase panic level as ticksToDowngrade approaches threshold, but never surpass 1
                 var panicLevel = TICKS_TO_DOWNGRADE_THRESHOLD / Math.max(structure.ticksToDowngrade, TICKS_TO_DOWNGRADE_THRESHOLD);

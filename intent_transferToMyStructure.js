@@ -3,6 +3,7 @@ const CREEP_COUNT_THRESHOLD = 5;
 
 var moveAction = require("action_move");
 var spawnManager = require("spawnManager");
+var intentsUtil = require("util_intents");
 
 module.exports = {
     range: 1,
@@ -27,7 +28,7 @@ module.exports = {
                     var needsMuchEnergy = freeEnergy / structure.energyCapacity;
 
                     var path = creep.pos.findPathTo(structure, {ignoreCreeps: true});
-                    var shortDistance = 1 / (path.length - this.range);
+                    var shortDistance = intentsUtil.getShortDistanceFactor(path, this.range);
 
                     var fewCreepsActive = (spawnManager.getCreepCount() < CREEP_COUNT_THRESHOLD) * 1;
 

@@ -1,4 +1,5 @@
 var moveAction = require("action_move");
+var intentsUtil = require("util_intents");
 
 module.exports = {
     range: 3,
@@ -17,7 +18,7 @@ module.exports = {
             var path = creep.pos.findPathTo(constructionSite, {ignoreCreeps: true});
 
             var muchProgress = constructionSite.progress / constructionSite.progressTotal;
-            var shortDistance = 1 / (path.length - this.range);
+            var shortDistance = intentsUtil.getShortDistanceFactor(path, this.range);
             var importance = 0.4 + muchProgress * 0.1 + shortDistance * 0.05;
 
             result.push(

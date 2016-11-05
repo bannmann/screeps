@@ -1,3 +1,5 @@
+var intentsUtil = require("util_intents");
+
 module.exports = {
     range: 3,
     canBePerformedBy: function(creep) {
@@ -12,7 +14,7 @@ module.exports = {
                 (enemy) => {
                     var path = creep.pos.findPathTo(enemy, {ignoreCreeps: true});
 
-                    var shortDistance = 1 / (path.length - this.range);
+                    var shortDistance = intentsUtil.getShortDistanceFactor(path, this.range);
                     var importance = 0.8 + shortDistance * 0.1;
 
                     result.push(

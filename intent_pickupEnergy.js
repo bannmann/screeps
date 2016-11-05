@@ -1,4 +1,5 @@
 var moveAction = require("action_move");
+var intentsUtil = require("util_intents");
 
 module.exports = {
     range: 1,
@@ -21,7 +22,7 @@ module.exports = {
                     // Don't calculate a factor > 1 if there's more energy than the creep can carry
                     var valuable = Math.min(droppedAmount, carryCapacity) / carryCapacity;
 
-                    var shortDistance = 1 / (path.length - this.range);
+                    var shortDistance = intentsUtil.getShortDistanceFactor(path, this.range);
 
                     var importance = 0.8 + valuable * 0.05 + shortDistance * 0.05;
 
