@@ -53,12 +53,12 @@ module.exports = {
     },
 
     isMovementNeeded(creep, path, intent) {
-        if (path.length > 1 && !path[0]) {
-            Game.notify("isMovementNeeded: path is ***" + JSON.stringify(path) + "***, intent=" + intent + ", movementStatus ***" + JSON.stringify(creep.memory.movementStatus) + "***");
-            // Need to return here as the game doesn't seem to send my notifications when it encounters an error.
+        try {
+            return path.length > 1 || !creep.pos.inRangeTo(path[0].x, path[0].y, intent.range);
+        } catch(e) {
+            Game.notify("isMovementNeeded: path is ***" + JSON.stringify(path) + "***, intent=" + intent + ", movementStatus ***" + JSON.stringify(creep.memory.movementStatus) + "***, \ne=" + e);
             return false;
         }
-        return path.length > 1 || !creep.pos.inRangeTo(path[0].x, path[0].y, intent.range);
     },
 
     isActive: function(creep) {
