@@ -33,7 +33,7 @@ module.exports = {
                             creep.memory.intent = "transferToController";
                             creep.memory.target = this.target.id;
 
-                            moveAction.start(creep, this.path, thisIntent);
+                            moveAction.start(creep, this.path, thisIntent.range);
                         }
                     });
             }
@@ -47,7 +47,7 @@ module.exports = {
             delete creep.memory.target;
         }
         else if (moveAction.isActive(creep)) {
-            moveAction.perform(creep, this);
+            moveAction.perform(creep);
         }
         else {
             creep.upgradeController(target);
