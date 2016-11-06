@@ -5,11 +5,16 @@ module.exports.processIntents = function() {
         var creep = Game.creeps[name];
 
         if (!creep.spawning && !creep.memory.intent) {
+            var debug = "*** " + creep.name + " ***";
             var possibilities = [];
             for (var intentName in intents) {
                 var intent = intents[intentName];
                 if (intent.canBePerformedBy(creep)) {
+                    debug += "\n\n" + intentName + ":";
                     var intentPossibilities = intent.listPossibilities(creep);
+                    _.each(intentPossibilities, (p) => {
+                        debug += "\n    importance=" + p.importance + " targetId=" + ("target" in p ? p.target.id : "n/a");
+                    });
                     possibilities = possibilities.concat(intentPossibilities);
                 }
             }
@@ -26,6 +31,9 @@ module.exports.processIntents = function() {
                     }
                 });
             possibility.choose();
+            debug += "\n\nchose " + possibility.choose;
+
+            if (("debug-intent-" + creep.name) in Game.flags) console.log(debug);
         }
 
         var intent = intents[creep.memory.intent];
