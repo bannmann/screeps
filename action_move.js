@@ -68,7 +68,7 @@ module.exports = {
     perform: function(creep) {
         var status = this.getStatus(creep);
 
-        if (this.isTargetInRange(creep, status)) {
+        if (this.isLegacyStatus(status) || this.isTargetInRange(creep, status)) {
             this.stop(creep);
         }
         else {
@@ -79,6 +79,10 @@ module.exports = {
 
     getStatus: function(creep) {
         return creep.memory.movementStatus;
+    },
+
+    isLegacyStatus: function(status) {
+        return !status.target;
     },
 
     isTargetInRange: function(creep, status) {

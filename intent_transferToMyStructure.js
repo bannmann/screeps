@@ -56,14 +56,15 @@ module.exports = {
         var target = Game.getObjectById(creep.memory.target);
         if (creep.carry.energy == 0 || target.energy == target.energyCapacity) {
             target.deregisterDelivery(creep);
-            delete creep.memory.intent;
-            delete creep.memory.target;
+            intentsUtil.reset(creep);
         }
         else if (moveAction.isActive(creep)) {
             moveAction.perform(creep);
         }
         else {
-            creep.transfer(target, RESOURCE_ENERGY);
+            if (creep.transfer(target, RESOURCE_ENERGY) != OK) {
+                intentsUtil.reset(creep);
+            }
         }
     }
 };

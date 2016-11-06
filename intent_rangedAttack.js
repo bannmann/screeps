@@ -34,12 +34,14 @@ module.exports = {
     pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
         if (!target) {
-            delete creep.memory.intent;
-            delete creep.memory.target;
+            intentsUtil.reset(creep);
         }
         else {
-            if(creep.rangedAttack(target) == ERR_NOT_IN_RANGE) {
+            var result = creep.rangedAttack(target);
+            if (result == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target);
+            } else if (result != OK) {
+                intentsUtil.reset(creep);
             }
         }
     }

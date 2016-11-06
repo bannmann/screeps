@@ -43,14 +43,15 @@ module.exports = {
     pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
         if (creep.carry.energy == 0) {
-            delete creep.memory.intent;
-            delete creep.memory.target;
+            intentsUtil.reset(creep);
         }
         else if (moveAction.isActive(creep)) {
             moveAction.perform(creep);
         }
         else {
-            creep.upgradeController(target);
+            if (creep.upgradeController(target) != OK) {
+                intentsUtil.reset(creep);
+            }
         }
     }
 };
