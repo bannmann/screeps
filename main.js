@@ -9,6 +9,8 @@ var towerManager = require("towerManager");
 var constructionManager = require("constructionManager");
 
 module.exports.loop = function() {
+    PathFinder.use(true);
+
     safeModeManager.manage();
     memoryCleaner.clean();
 
