@@ -13,7 +13,7 @@ module.exports.processIntents = function() {
                     debug += "\n\n" + intentName + ":";
                     var intentPossibilities = intent.listPossibilities(creep);
                     _.each(intentPossibilities, (p) => {
-                        debug += "\n    importance=" + p.importance + " targetId=" + ("target" in p ? p.target.id : "n/a");
+                        debug += "\n    " + JSON.stringify(p);
                     });
                     possibilities = possibilities.concat(intentPossibilities);
                 }
@@ -31,7 +31,7 @@ module.exports.processIntents = function() {
                     }
                 });
             possibility.choose();
-            debug += "\n\nchose " + possibility.choose;
+            debug += "\n\nchose " + JSON.stringify(possibility);
 
             if (("debug-intent-" + creep.name) in Game.flags) console.log(debug);
         }

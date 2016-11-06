@@ -1,7 +1,9 @@
 var moveAction = require("action_move");
 var intentsUtil = require("util_intents");
+var Possibility = require("possibility");
 
 module.exports = {
+    name: "pickupEnergy",
     range: 1,
     canBePerformedBy: function(creep) {
         return creep.hasActiveBodyparts(MOVE, CARRY) && creep.carry.energy < creep.carryCapacity;
@@ -20,24 +22,21 @@ module.exports = {
                     var carryCapacity = creep.carryCapacity;
                     var droppedAmount = droppedEnergy.energy;
 
-                    var path = creep.pos.findPathTo(droppedEnergy, {ignoreCreeps: true});
-
                     // Don't calculate a factor > 1 if there's more energy than the creep can carry
                     var valuable = Math.min(droppedAmount, carryCapacity) / carryCapacity;
 
-                    var shortDistance = intentsUtil.getShortDistanceFactor(path, this.range);
+                    var baseImportance = 0.8 + valuable * 0.05;
 
-                    var importance = 0.8 + valuable * 0.05 + shortDistance * 0.05;
-
-                    result.push(
-                        {
-                            importance: importance, target: droppedEnergy, path: path, choose: function() {
-                                creep.memory.intent = "pickupEnergy";
-                                creep.memory.target = this.target.id;
-
-                                moveAction.start(creep, this.path, thisIntent.range);
-                            }
-                        });
+                    result.push(new Possibility({
+                        creep: creep,
+                        intent: this,
+                        roomObject: droppedEnergy,
+                        shortDistanceFactor: 0.05,
+                        baseImportance: baseImportance,
+                        preparationFunction: function() {
+                            creep.memory.target = this.roomObject.id;
+                        }
+                    }));
                 });
         }
         return result;

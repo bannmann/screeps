@@ -4,15 +4,16 @@ const CREEP_COUNT_THRESHOLD = 5;
 var moveAction = require("action_move");
 var spawnManager = require("spawnManager");
 var intentsUtil = require("util_intents");
+var Possibility = require("possibility");
 
 module.exports = {
+    name: "transferToMyStructure",
     range: 1,
     canBePerformedBy: function(creep) {
         return creep.hasActiveBodyparts(MOVE, CARRY) > 0 && creep.carry.energy > 0;
     },
     listPossibilities: function(creep) {
         var result = [];
-        var thisIntent = this;
         for (var structureId in Game.structures) {
             var structure = Game.structures[structureId];
             if (structure.structureType ==
@@ -27,26 +28,21 @@ module.exports = {
                 if (freeEnergy > 0) {
                     var needsMuchEnergy = freeEnergy / structure.energyCapacity;
 
-                    var path = creep.pos.findPathTo(structure, {ignoreCreeps: true});
-                    var shortDistance = intentsUtil.getShortDistanceFactor(path, this.range);
-
                     var fewCreepsActive = (spawnManager.getCreepCount() < CREEP_COUNT_THRESHOLD) * 1;
 
-                    var importance = 0.3 + fewCreepsActive * 0.5 + needsMuchEnergy * 0.1 + shortDistance * 0.05;
+                    var importance = 0.3 + fewCreepsActive * 0.5 + needsMuchEnergy * 0.1;
 
-                    result.push(
-                        {
-                            importance: importance,
-                            target: structure,
-                            path: path,
-                            choose: function() {
-                                this.target.registerDelivery(creep);
-                                creep.memory.intent = "transferToMyStructure";
-                                creep.memory.target = this.target.id;
-
-                                moveAction.start(creep, this.path, thisIntent.range);
-                            }
-                        });
+                    result.push(new Possibility({
+                        creep: creep,
+                        intent: this,
+                        roomObject: structure,
+                        shortDistanceFactor: 0.05,
+                        baseImportance: importance,
+                        preparationFunction: function() {
+                            creep.memory.target = this.roomObject.id;
+                            this.roomObject.registerDelivery(creep);
+                        }
+                    }));
                 }
             }
         }

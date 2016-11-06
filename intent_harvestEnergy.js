@@ -1,7 +1,9 @@
 var moveAction = require("action_move");
 var intentsUtil = require("util_intents");
+var Possibility = require("possibility");
 
 module.exports = {
+    name: "harvestEnergy",
     range: 1,
     canBePerformedBy: function(creep) {
         return creep.hasActiveBodyparts(MOVE, WORK, CARRY) && creep.carry.energy == 0;
@@ -15,24 +17,19 @@ module.exports = {
             sources.forEach(
                 (source)=> {
                     if (!moveAction.isTargetJammed(source)) {
-                        var path = creep.pos.findPathTo(source, {ignoreCreeps: true});
-
-                        var shortDistance = intentsUtil.getShortDistanceFactor(path, this.range);
                         var muchEnergyLeft = source.energy / source.energyCapacity;
-                        var importance = 0.7 + shortDistance * 0.1 + muchEnergyLeft * 0.05;
+                        var baseImportance = 0.7 + muchEnergyLeft * 0.05;
 
-                        result.push(
-                            {
-                                importance: importance,
-                                target: source,
-                                path: path,
-                                choose: function() {
-                                    creep.memory.intent = "harvestEnergy";
-                                    creep.memory.target = this.target.id;
-
-                                    moveAction.start(creep, this.path, thisIntent.range);
-                                }
-                            });
+                        result.push(new Possibility({
+                            creep: creep,
+                            intent: this,
+                            roomObject: source,
+                            shortDistanceFactor: 0.1,
+                            baseImportance: baseImportance,
+                            preparationFunction: function() {
+                                creep.memory.target = this.roomObject.id;
+                            }
+                        }));
                     }
                 });
         }

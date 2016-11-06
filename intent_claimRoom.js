@@ -1,7 +1,9 @@
 var moveAction = require("action_move");
 var intentsUtil = require("util_intents");
+var Possibility = require("possibility");
 
 module.exports = {
+    name: "claimRoom",
     range: 1,
     canBePerformedBy: function(creep) {
         return creep.hasActiveBodyparts(MOVE, CLAIM);
@@ -12,20 +14,16 @@ module.exports = {
 
         var controller = creep.room.controller;
         if (controller && !controller.owner) {
-            var path = creep.pos.findPathTo(controller, {ignoreCreeps: true});
-
-            result.push(
-                {
-                    importance: 0.5,
-                    target: controller,
-                    path: path,
-                    choose: function() {
-                        creep.memory.intent = "claimRoom";
-                        creep.memory.target = this.target.id;
-
-                        moveAction.start(creep, this.path, thisIntent.range);
-                    }
-                });
+            result.push(new Possibility({
+                creep: creep,
+                intent: this,
+                roomObject: controller,
+                shortDistanceFactor: 0,
+                baseImportance: 0.5,
+                preparationFunction: function() {
+                    creep.memory.target = this.roomObject.id;
+                }
+            }));
         }
 
         return result;

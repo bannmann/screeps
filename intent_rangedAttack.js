@@ -1,6 +1,8 @@
 var intentsUtil = require("util_intents");
+var Possibility = require("possibility");
 
 module.exports = {
+    name: "rangedAttack",
     range: 3,
     canBePerformedBy: function(creep) {
         return creep.hasActiveBodyparts(MOVE, RANGED_ATTACK);
@@ -12,21 +14,16 @@ module.exports = {
             var enemies = room.find(FIND_HOSTILE_CREEPS);
             enemies.forEach(
                 (enemy) => {
-                    var path = creep.pos.findPathTo(enemy, {ignoreCreeps: true});
-
-                    var shortDistance = intentsUtil.getShortDistanceFactor(path, this.range);
-                    var importance = 0.8 + shortDistance * 0.1;
-
-                    result.push(
-                        {
-                            importance: importance,
-                            target: enemy,
-                            path: path,
-                            choose: function() {
-                                creep.memory.intent = "rangedAttack";
-                                creep.memory.target = this.target.id;
-                            }
-                        });
+                    result.push(new Possibility({
+                        creep: creep,
+                        intent: this,
+                        roomObject: enemy,
+                        shortDistanceFactor: 0.1,
+                        baseImportance: 0.8,
+                        preparationFunction: function() {
+                            creep.memory.target = this.roomObject.id;
+                        }
+                    }));
                 });
         }
         return result;

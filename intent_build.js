@@ -1,7 +1,9 @@
 var moveAction = require("action_move");
 var intentsUtil = require("util_intents");
+var Possibility = require("possibility");
 
 module.exports = {
+    name: "build",
     range: 3,
     canBePerformedBy: function(creep) {
         return creep.hasActiveBodyparts(MOVE, WORK, CARRY) &&
@@ -15,24 +17,19 @@ module.exports = {
         for (var constructionSiteId in Game.constructionSites) {
             var constructionSite = Game.constructionSites[constructionSiteId];
 
-            var path = creep.pos.findPathTo(constructionSite, {ignoreCreeps: true});
-
             var muchProgress = constructionSite.progress / constructionSite.progressTotal;
-            var shortDistance = intentsUtil.getShortDistanceFactor(path, this.range);
-            var importance = 0.4 + muchProgress * 0.1 + shortDistance * 0.05;
+            var baseImportance = 0.4 + muchProgress * 0.1;
 
-            result.push(
-                {
-                    importance: importance,
-                    target: constructionSite,
-                    path: path,
-                    choose: function() {
-                        creep.memory.intent = "build";
-                        creep.memory.target = this.target.id;
-
-                        moveAction.start(creep, this.path, thisIntent.range);
-                    }
-                });
+            result.push(new Possibility({
+                creep: creep,
+                intent: this,
+                roomObject: constructionSite,
+                shortDistanceFactor: 0.05,
+                baseImportance: baseImportance,
+                preparationFunction: function() {
+                    creep.memory.target = this.roomObject.id;
+                }
+            }));
         }
         return result;
     },
