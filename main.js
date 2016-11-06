@@ -6,14 +6,16 @@ var memoryCleaner = require("memoryCleaner");
 var intentManager = require("intentManager");
 var spawnManager = require("spawnManager");
 var towerManager = require("towerManager");
+var constructionManager = require("constructionManager");
 
 module.exports.loop = function() {
     safeModeManager.manage();
     memoryCleaner.clean();
 
     towerManager.manage();
-    intentManager.processIntents();
 
+    constructionManager.manage();
+    intentManager.processIntents();
     spawnManager.spawnCreepIfNecessary();
 
     moveAction.savePauseStats();

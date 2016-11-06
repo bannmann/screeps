@@ -86,5 +86,9 @@ module.exports = {
 
     getCreepCount: function() {
         return Object.keys(Game.creeps).length;
+    },
+
+    getCreepCountByRace: function(race) {
+        return _.filter(Game.creeps, function(creep) { return creep.memory.race == race; }).length;
     }
 };
