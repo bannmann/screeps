@@ -6,8 +6,9 @@ const MAX_PAUSE_LIST_LENGTH = 10;
 module.exports = {
     pauseListsByTarget: Memory["CreepMovementPauses"] || {}, currentTickCreepPauses: {},
 
-    isTargetJammed: function(id) {
-        var pauseList = this.pauseListsByTarget[id];
+    isTargetJammed: function(roomObject) {
+        var targetPositionString = this.makePositionString(roomObject.pos);
+        var pauseList = this.pauseListsByTarget[targetPositionString];
         var result = false;
         if (pauseList) {
             result = !!pauseList.find(

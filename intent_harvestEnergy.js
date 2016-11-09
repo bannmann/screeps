@@ -14,7 +14,7 @@ module.exports = {
             var sources = room.find(FIND_SOURCES);
             sources.forEach(
                 (source)=> {
-                    if (!moveAction.isTargetJammed(source.id)) {
+                    if (!moveAction.isTargetJammed(source)) {
                         var path = creep.pos.findPathTo(source, {ignoreCreeps: true});
 
                         var shortDistance = intentsUtil.getShortDistanceFactor(path, this.range);
