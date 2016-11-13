@@ -1,9 +1,9 @@
-var spawnManager = require("spawnManager");
 var intentsUtil = require("util_intents");
+var idleWorkerIntent = require("intent_idleWorker");
 
 module.exports = {
     canBePerformedBy: function(creep) {
-        return true;
+        return !idleWorkerIntent.canBePerformedBy(creep);
     },
     listPossibilities: function(creep) {
         var result = [];
@@ -11,14 +11,12 @@ module.exports = {
             {
                 importance: 0,
                 choose: function() {
-                    creep.memory.intent = "idle";
+                    creep.memory.intent = "idleNonWorker";
                 }
             });
         return result;
     },
     pursue: function(creep) {
-        creep.say("Zzzzzz....");
-        spawnManager.registerIdleCreep();
         intentsUtil.reset(creep);
     }
 };

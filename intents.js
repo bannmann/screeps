@@ -6,7 +6,8 @@ var transferToController = require("intent_transferToController");
 var rangedAttack = require("intent_rangedAttack");
 var moveToClaimableRoom = require("intent_moveToClaimableRoom");
 var claimRoom = require("intent_claimRoom");
-var idle = require("intent_idle");
+var idleWorker = require("intent_idleWorker");
+var idleNonWorker = require("intent_idleNonWorker");
 
 module.exports = {
     transferToMyStructure: transferToMyStructure,
@@ -17,5 +18,6 @@ module.exports = {
     rangedAttack: rangedAttack,
     moveToClaimableRoom: moveToClaimableRoom,
     claimRoom: claimRoom,
-    idle: idle
+    idleWorker: idleWorker,
+    idleNonWorker: idleNonWorker
 };
