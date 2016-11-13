@@ -13,15 +13,20 @@ module.exports = {
 
                 towers.forEach(
                     (tower) => {
-                        // Although we always reinforce our defensive, the order of calls matters if energy is low.
+                        var done = false;
                         if (enemy) {
                             tower.attack(enemy);
-                            this.reinforceDefensiveStructures(tower);
+                            done = true;
                         }
-                        else {
-                            this.reinforceDefensiveStructures(tower);
-                            this.healCreeps(tower);
-                            this.repairNonDefensiveStructures(tower);
+
+                        if (!done) {
+                            done = this.reinforceDefensiveStructures(tower);
+                        }
+                        if (!done) {
+                            done = this.healCreeps(tower);
+                        }
+                        if (!done) {
+                            done = this.repairNonDefensiveStructures(tower);
                         }
                     });
             });
@@ -40,15 +45,22 @@ module.exports = {
     },
 
     healCreeps: function(tower) {
+        var result = false;
+
         var creepToHeal = tower.pos.findClosestByRange(FIND_MY_CREEPS, {
             filter: (creep) => creep.hits < creep.hitsMax
         });
         if (creepToHeal) {
             tower.heal(creepToHeal);
+            result = true;
         }
+
+        return result;
     },
 
     reinforceDefensiveStructures: function(tower) {
+        var result = false;
+
         var walls = tower.room.find(
             FIND_STRUCTURES, {
                 filter: (structure) => this.isDefensiveStructure(structure)
@@ -63,17 +75,25 @@ module.exports = {
             });
         if (wallToRepair && wallToRepair.hits < DESIRED_STRENGTH) {
             tower.repair(wallToRepair);
+            result = true;
         }
+
+        return result;
     },
 
     repairNonDefensiveStructures: function(tower) {
+        var result = false;
+
         var damagedStructure = tower.pos.findClosestByRange(
             FIND_STRUCTURES, {
                 filter: (structure) => !this.isDefensiveStructure(structure) && structure.hits < structure.hitsMax
             });
         if (damagedStructure) {
             tower.repair(damagedStructure);
+            result = true;
         }
+
+        return result;
     },
 
     // "Defensive" structure means "has up to 3M hit points, only repair up to DESIRED_STRENGTH."
