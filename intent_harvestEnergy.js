@@ -40,7 +40,7 @@ module.exports = {
     },
     pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
-        if (creep.carry.energy == creep.carryCapacity || target.energy == 0) {
+        if (creep.carry.energy == creep.carryCapacity || target == null || target.energy == 0) {
             intentsUtil.reset(creep);
         }
         else if (moveAction.isActive(creep)) {
