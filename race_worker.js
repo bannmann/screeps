@@ -30,8 +30,8 @@ module.exports = {
     getAppropriateCreepSize(room, spawnManager) {
         var result = Math.floor(room.energyCapacityAvailable / COST_PER_SIZE);
 
-        // If no creeps are left, the first creep should be a small one that can help us gain energy
-        if (spawnManager.getCreepCount() == 0) {
+        // If no workers are left, the first creep should be a small one that can help us gain energy
+        if (spawnManager.getCreepCountByRace("worker") == 0) {
             result = 1;
         }
 
