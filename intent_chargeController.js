@@ -5,7 +5,7 @@ var intentsUtil = require("util_intents");
 var Possibility = require("possibility");
 
 module.exports = {
-    name: "transferToController",
+    name: "chargeController",
     range: 3,
     canBePerformedBy: function(creep) {
         return creep.hasActiveBodyparts(MOVE, WORK, CARRY) && creep.carry.energy > 0;

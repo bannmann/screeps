@@ -7,7 +7,7 @@ module.exports = {
     range: 3,
     canBePerformedBy: function(creep) {
         return creep.hasActiveBodyparts(MOVE, WORK, CARRY) &&
-            // avoid sucking up all creeps for building, always leave some for 'transferToMyStructure' intent
+            // avoid sucking up all creeps for building, always leave some for 'chargeSpawn' intent
             creep.belongsToGroup(0, 2) &&
             creep.carry.energy > 0;
     },

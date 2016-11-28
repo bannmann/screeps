@@ -7,7 +7,7 @@ var intentsUtil = require("util_intents");
 var Possibility = require("possibility");
 
 module.exports = {
-    name: "transferToMyStructure",
+    name: "chargeSpawn",
     range: 1,
     canBePerformedBy: function(creep) {
         return creep.hasActiveBodyparts(MOVE, CARRY) > 0 && creep.carry.energy > 0;
@@ -19,9 +19,7 @@ module.exports = {
             if (structure.structureType ==
                 STRUCTURE_EXTENSION ||
                 structure.structureType ==
-                STRUCTURE_SPAWN ||
-                structure.structureType ==
-                STRUCTURE_TOWER) {
+                STRUCTURE_SPAWN) {
 
                 var freeEnergy = structure.energyCapacity -
                     Math.min(structure.energy + structure.calculateExpectedEnergy(), structure.energyCapacity);
