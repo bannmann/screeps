@@ -77,7 +77,7 @@ module.exports = {
     },
 
     cpuUsageTooLow: function() {
-        return Game.cpu.getUsed() < Game.cpu.limit * 0.8;
+        return Game.cpu.getUsed() < Game.cpu.limit * 0.7;
     },
 
     belowSimulationCreepCount: function() {
