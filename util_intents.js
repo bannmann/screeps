@@ -6,5 +6,6 @@ module.exports = {
         delete creep.memory.intent;
         delete creep.memory.target;
         delete creep.memory.movementStatus;
+        creep.logDebug("reset");
     }
 };
