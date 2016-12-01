@@ -23,11 +23,15 @@ module.exports = function(parameters) {
     }
 
     this.choose = function() {
-        creep.memory.intent = intent.name;
         if (preparationFunction) preparationFunction.call(parameters);
+        activateIntent(intent);
+    }
+
+    function activateIntent(intent) {
+        creep.memory.intent = intent.name;
 
         if (roomObject) {
-            moveAction.start(creep, path, intent.range);
+            moveAction.start(creep, path, intent.range, roomObject.pos);
         }
     }
 }
