@@ -5,5 +5,6 @@ module.exports = {
     reset: function(creep) {
         delete creep.memory.intent;
         delete creep.memory.target;
+        delete creep.memory.movementStatus;
     }
 };
