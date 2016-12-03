@@ -28,7 +28,7 @@ module.exports.processIntents = function() {
                         if (current.importance < 0 || current.importance > 1) {
                             Game.notify(
                                 "Illegal importance value of " + current.importance + " for possibility choice " +
-                                current.choose);
+                                JSON.stringify(current));
                             current.importance = 0;
                         }
 
