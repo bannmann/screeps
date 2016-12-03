@@ -9,6 +9,7 @@ var moveToClaimableRoom = require("intent_moveToClaimableRoom");
 var claimRoom = require("intent_claimRoom");
 var idleWorker = require("intent_idleWorker");
 var idleNonWorker = require("intent_idleNonWorker");
+var guidedScouting = require("intent_guidedScouting");
 
 module.exports = {
     chargeSpawn: chargeSpawn,
@@ -21,5 +22,6 @@ module.exports = {
     moveToClaimableRoom: moveToClaimableRoom,
     claimRoom: claimRoom,
     idleWorker: idleWorker,
-    idleNonWorker: idleNonWorker
+    idleNonWorker: idleNonWorker,
+    guidedScouting: guidedScouting
 };
