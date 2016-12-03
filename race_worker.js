@@ -1,9 +1,12 @@
 const COST_PER_SIZE = 250;
+const BASE_WORKER_COUNT = 5;
+
+var logger = require("logger");
 
 module.exports = {
     getCurrentImportance: function(spawn, spawnManager) {
         var result = 0.1;
-        if (spawnManager.getCreepCount() == 0) {
+        if (spawnManager.getCreepCountByRace("worker") < BASE_WORKER_COUNT) {
             result = 0.99;
         }
         return result;
