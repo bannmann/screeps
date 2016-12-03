@@ -1,13 +1,16 @@
 var moveAction = require("action_move");
 var intentsUtil = require("util_intents");
 var Possibility = require("possibility");
+var logger = require("logger");
 
 module.exports = {
     name: "harvestEnergy",
     range: 1,
+
     canBePerformedBy: function(creep) {
         return creep.hasActiveBodyparts(MOVE, WORK, CARRY) && creep.carry.energy == 0;
     },
+
     listPossibilities: function(creep) {
         var result = [];
         var thisIntent = this;
@@ -16,7 +19,7 @@ module.exports = {
             var sources = room.find(FIND_SOURCES);
             sources.forEach(
                 (source)=> {
-                    if (!moveAction.isTargetJammed(source)) {
+                    if (this.isHarvestable(source) && !this.isJammed(source)) {
                         var muchEnergyLeft = source.energy / source.energyCapacity;
                         var baseImportance = 0.7 + muchEnergyLeft * 0.05;
 
@@ -35,6 +38,21 @@ module.exports = {
         }
         return result;
     },
+
+    isHarvestable: function(source) {
+        var controller = source.room.controller;
+
+        var myRoom = controller.my;
+        var neutralRoom = !!controller.owner;
+        var reservedForOtherPlayer = controller.reservation && controller.reservation.username != Game.username;
+
+        return myRoom || neutralRoom && !reservedForOtherPlayer;
+    },
+
+    isJammed: function(source) {
+        return moveAction.isTargetJammed(source);
+    },
+
     pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
         if (creep.carry.energy == creep.carryCapacity || target == null || target.energy == 0) {
