@@ -1,6 +1,6 @@
-var spawnManager = require("spawnManager");
 var intentsUtil = require("util_intents");
 var Possibility = require("possibility");
+var workerRace = require("race_worker");
 
 module.exports = {
     name: "idleWorker",
@@ -21,7 +21,7 @@ module.exports = {
     },
     pursue: function(creep) {
         creep.say("Zzzzzz....");
-        spawnManager.registerIdleCreep();
+        workerRace.registerIdleCreep(creep);
         intentsUtil.reset(creep);
     }
 };

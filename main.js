@@ -8,7 +8,9 @@ var spawnManager = require("spawnManager");
 var towerManager = require("towerManager");
 var constructionManager = require("constructionManager");
 var armyManager = require("armyManager");
+var workerRace = require("race_worker");
 var logger = require("logger");
+var creepDirectory = require("creepDirectory");
 
 module.exports.loop = function() {
     PathFinder.use(true);
@@ -17,6 +19,8 @@ module.exports.loop = function() {
     memoryCleaner.clean();
 
     armyManager.initialize();
+    workerRace.onTickStarting();
+    creepDirectory.onTickStarting();
 
     towerManager.manage();
 
@@ -25,5 +29,7 @@ module.exports.loop = function() {
     spawnManager.spawnCreepIfNecessary();
 
     moveAction.savePauseStats();
-    spawnManager.saveIdleCreepCount();
+
+    workerRace.onTickEnding();
+    creepDirectory.onTickEnding();
 };

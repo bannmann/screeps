@@ -1,44 +1,57 @@
 const FLAG_PREFIX = "offensive=";
 
 var logger = require("logger");
+var creepDirectory = require("creepDirectory");
+
+var data = {};
 
 module.exports = {
     initialize: function() {
-        this.desiredOffensiveSize = 0;
+        data.desiredOffensiveSize = 0;
         _.each(Game.flags,
             (flag) => {
                 if (flag.name.startsWith(FLAG_PREFIX)) {
-                    this.desiredOffensiveSize = parseInt(flag.name.substr(FLAG_PREFIX.length));
-                    this.targetFlag = flag;
+                    data.desiredOffensiveSize = parseInt(flag.name.substr(FLAG_PREFIX.length));
+                    data.targetFlag = flag;
                 }
             });
 
-        this.deployedCreeps = 0;
-        this.totalCreeps = 0;
+        data.deployedAttackers = 0;
+        data.totalSpawnedAttackers = 0;
+
         _.each(Game.creeps,
             (creep) => {
                 if (creep.memory.race == "attacker" && !creep.spawning) {
-                    this.totalCreeps++;
+                    data.totalSpawnedAttackers++;
 
                     if (this.isDeployed(creep)) {
-                        this.deployedCreeps++;
+                        data.deployedAttackers++;
                     }
                 }
             });
 
-        this.offensiveActive = this.desiredOffensiveSize > 0;
-
-        this.isRecruiting = this.offensiveActive && this.totalCreeps < this.desiredOffensiveSize;
-
-        // Do not send reinforcements one by one, but send a new offensive with full strength.
-        this.shouldDeployCreeps = this.offensiveActive && !this.isRecruiting && this.deployedCreeps == 0;
+        data.offensiveActive = data.desiredOffensiveSize > 0;
     },
 
     markDeployed: function(creep) {
         creep.memory.offensiveStatus = "DEPLOYED";
     },
 
+    isRecruiting: function() {
+        var spawningAndSpawnedAttackers = creepDirectory.getGlobalRaceCount("attacker");
+        return data.offensiveActive && spawningAndSpawnedAttackers < data.desiredOffensiveSize;
+    },
+
+    shouldDeployCreeps: function() {
+        // Do not send reinforcements one by one, but send a new offensive with full strength.
+        return data.offensiveActive && data.totalSpawnedAttackers >= data.desiredOffensiveSize && data.deployedAttackers == 0;
+    },
+
     isDeployed: function(creep) {
         return creep.memory.offensiveStatus == "DEPLOYED";
+    },
+
+    getTargetFlag: function() {
+        return data.targetFlag;
     }
 };

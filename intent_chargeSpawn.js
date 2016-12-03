@@ -2,9 +2,9 @@
 const CREEP_COUNT_THRESHOLD = 5;
 
 var moveAction = require("action_move");
-var spawnManager = require("spawnManager");
 var intentsUtil = require("util_intents");
 var Possibility = require("possibility");
+var creepDirectory = require("creepDirectory");
 
 module.exports = {
     name: "chargeSpawn",
@@ -24,9 +24,10 @@ module.exports = {
                 if (freeEnergy > 0) {
                     var needsMuchEnergy = freeEnergy / structure.energyCapacity;
 
-                    var fewCreepsActive = (spawnManager.getCreepCount() < CREEP_COUNT_THRESHOLD) * 1;
+                    var workerCount = creepDirectory.getRoomRaceCount(creep.room.name, "worker");
+                    var fewWorkersActive = (workerCount < CREEP_COUNT_THRESHOLD) * 1;
 
-                    var importance = 0.3 + fewCreepsActive * 0.5 + needsMuchEnergy * 0.1;
+                    var importance = 0.3 + fewWorkersActive * 0.5 + needsMuchEnergy * 0.1;
 
                     result.push(new Possibility({
                         creep: creep,

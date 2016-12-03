@@ -15,14 +15,14 @@ module.exports = {
 
         var alreadyDeployed = armyManager.isDeployed(creep);
 
-        var newCreepShouldDeploy = !alreadyDeployed && armyManager.shouldDeployCreeps;
+        var newCreepShouldDeploy = !alreadyDeployed && armyManager.shouldDeployCreeps();
         var deployedCreepShouldReturn = alreadyDeployed && this.isMovementNeeded(creep);
 
         if (newCreepShouldDeploy || deployedCreepShouldReturn) {
             result.push(new Possibility({
                 creep: creep,
                 intent: this,
-                roomObject: armyManager.targetFlag,
+                roomObject: armyManager.getTargetFlag(),
                 shortDistanceFactor: 0.1,
                 baseImportance: 0.5,
                 preparationFunction: function() {
