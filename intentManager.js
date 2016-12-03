@@ -18,7 +18,7 @@ module.exports.processIntents = function() {
                     possibilities = possibilities.concat(intentPossibilities);
                 }
             }
-            var possibility;
+            var possibility = null;
             possibilities.forEach(
                 (current) => {
                     if (current.importance < 0 || current.importance > 1) {
