@@ -4,16 +4,17 @@ module.exports = {
     getCurrentImportance: function(spawn, spawnManager) {
         var result = 0;
 
-        if (spawnManager.getCreepCountByRace("scout") == 0) {
-            result = BASE_IMPORTANCE;
-        }
+        _.each(
+            Game.flags, (flag)=> {
+                if (flag.name.startsWith("scout") && spawnManager.getCreepCountByRace("scout") == 0) {
+                    result = BASE_IMPORTANCE;
+                }
+            });
 
         return result;
-    },
-    getCost: function(room, spawnManager) {
+    }, getCost: function(room, spawnManager) {
         return 50;
-    },
-    getBody(room, spawnManager) {
+    }, getBody(room, spawnManager) {
         return [MOVE];
     }
 };
