@@ -7,12 +7,16 @@ var intentManager = require("intentManager");
 var spawnManager = require("spawnManager");
 var towerManager = require("towerManager");
 var constructionManager = require("constructionManager");
+var armyManager = require("armyManager");
+var logger = require("logger");
 
 module.exports.loop = function() {
     PathFinder.use(true);
 
     safeModeManager.manage();
     memoryCleaner.clean();
+
+    armyManager.initialize();
 
     towerManager.manage();
 
