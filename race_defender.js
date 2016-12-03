@@ -8,7 +8,7 @@ module.exports = {
 
         var enemies = spawn.room.find(FIND_HOSTILE_CREEPS).length;
         if (enemies > 0) {
-            var activeFighters = spawnManager.getCreepCountByRace("fighter");
+            var activeFighters = spawnManager.getCreepCountByRace("defender");
             if (activeFighters < enemies * DEFENSE_FACTOR) {
                 result = BASE_IMPORTANCE;
             }
