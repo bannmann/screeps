@@ -25,13 +25,14 @@ module.exports = {
                     // Don't calculate a factor > 1 if there's more energy than the creep can carry
                     var valuable = Math.min(droppedAmount, carryCapacity) / carryCapacity;
 
-                    var baseImportance = 0.8 + valuable * 0.05;
+                    // If these outmatch harvestEnergy, all workers always loot enemy corpses in other rooms.
+                    var baseImportance = 0.7 + valuable * 0.01;
 
                     result.push(new Possibility({
                         creep: creep,
                         intent: this,
                         roomObject: droppedEnergy,
-                        shortDistanceFactor: 0.05,
+                        shortDistanceFactor: 0.04,
                         baseImportance: baseImportance,
                         preparationFunction: function() {
                             creep.memory.target = this.roomObject.id;

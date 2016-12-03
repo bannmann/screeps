@@ -21,13 +21,13 @@ module.exports = {
                 (source)=> {
                     if (this.isHarvestable(source) && !this.isJammed(source)) {
                         var muchEnergyLeft = source.energy / source.energyCapacity;
-                        var baseImportance = 0.7 + muchEnergyLeft * 0.05;
+                        var baseImportance = 0.7 + muchEnergyLeft * 0.01;
 
                         result.push(new Possibility({
                             creep: creep,
                             intent: this,
                             roomObject: source,
-                            shortDistanceFactor: 0.1,
+                            shortDistanceFactor: 0.04,
                             baseImportance: baseImportance,
                             preparationFunction: function() {
                                 creep.memory.target = this.roomObject.id;
