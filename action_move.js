@@ -98,7 +98,7 @@ module.exports = {
     },
 
     isLegacyStatus: function(status) {
-        return !status.target;
+        return !status.target || status.target.roomName === undefined;
     },
 
     isTargetInRange: function(creep, status) {
