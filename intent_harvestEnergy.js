@@ -19,7 +19,7 @@ module.exports = {
             var sources = room.find(FIND_SOURCES);
             sources.forEach(
                 (source)=> {
-                    if (this.isHarvestable(source) && !this.isJammed(source)) {
+                    if (source.energy > 0 && this.isHarvestable(source) && !this.isJammed(source)) {
                         var muchEnergyLeft = source.energy / source.energyCapacity;
                         var baseImportance = 0.7 + muchEnergyLeft * 0.01;
 
