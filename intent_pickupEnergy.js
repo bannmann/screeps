@@ -10,36 +10,31 @@ module.exports = {
     },
     listPossibilities: function(creep) {
         var result = [];
-        var thisIntent = this;
-        for (var roomId in Game.rooms) {
-            var room = Game.rooms[roomId];
-            var droppedEnergies = room.find(FIND_DROPPED_ENERGY, {
-                // Avoid picking up energy on room exit tiles as it makes creeps oscillate between two rooms.
-                filter: (drop) => !this.placedOnRoomExit(drop)
+        var droppedEnergies = creep.room.find(FIND_DROPPED_ENERGY, {
+            // Avoid picking up energy on room exit tiles as it makes creeps oscillate between two rooms.
+            filter: (drop) => !this.placedOnRoomExit(drop)
+        });
+        droppedEnergies.forEach(
+            (droppedEnergy) => {
+                var carryCapacity = creep.carryCapacity;
+                var droppedAmount = droppedEnergy.energy;
+
+                // Don't calculate a factor > 1 if there's more energy than the creep can carry
+                var valuable = Math.min(droppedAmount, carryCapacity) / carryCapacity;
+
+                var baseImportance = 0.7 + valuable * 0.03;
+
+                result.push(new Possibility({
+                    creep: creep,
+                    intent: this,
+                    roomObject: droppedEnergy,
+                    shortDistanceFactor: 0.02,
+                    baseImportance: baseImportance,
+                    preparationFunction: function() {
+                        creep.memory.target = this.roomObject.id;
+                    }
+                }));
             });
-            droppedEnergies.forEach(
-                (droppedEnergy) => {
-                    var carryCapacity = creep.carryCapacity;
-                    var droppedAmount = droppedEnergy.energy;
-
-                    // Don't calculate a factor > 1 if there's more energy than the creep can carry
-                    var valuable = Math.min(droppedAmount, carryCapacity) / carryCapacity;
-
-                    // If these outmatch harvestEnergy, all workers always loot enemy corpses in other rooms.
-                    var baseImportance = 0.7 + valuable * 0.01;
-
-                    result.push(new Possibility({
-                        creep: creep,
-                        intent: this,
-                        roomObject: droppedEnergy,
-                        shortDistanceFactor: 0.04,
-                        baseImportance: baseImportance,
-                        preparationFunction: function() {
-                            creep.memory.target = this.roomObject.id;
-                        }
-                    }));
-                });
-        }
         return result;
     },
     placedOnRoomExit: function(roomObject) {

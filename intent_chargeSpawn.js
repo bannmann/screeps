@@ -16,10 +16,8 @@ module.exports = {
         var result = [];
         for (var structureId in Game.structures) {
             var structure = Game.structures[structureId];
-            if (structure.structureType ==
-                STRUCTURE_EXTENSION ||
-                structure.structureType ==
-                STRUCTURE_SPAWN) {
+            var isSpawnOrExtension = structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN;
+            if (isSpawnOrExtension &&  structure.room == creep.room) {
 
                 var freeEnergy = structure.energyCapacity -
                     Math.min(structure.energy + structure.calculateExpectedEnergy(), structure.energyCapacity);

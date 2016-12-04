@@ -14,7 +14,7 @@ module.exports = {
         var result = [];
         for (var structureId in Game.structures) {
             var structure = Game.structures[structureId];
-            if (structure.structureType == STRUCTURE_CONTROLLER) {
+            if (structure.structureType == STRUCTURE_CONTROLLER && structure.room == creep.room) {
                 // Increase panic level as ticksToDowngrade approaches threshold, but never surpass 1
                 var panicLevel = TICKS_TO_DOWNGRADE_THRESHOLD / Math.max(structure.ticksToDowngrade, TICKS_TO_DOWNGRADE_THRESHOLD);
 
