@@ -74,7 +74,7 @@ module.exports = {
     perform: function(creep) {
         var status = this.getStatus(creep);
 
-        if (status.lastRoom != creep.pos.roomName) {
+        if (!this.isLegacyStatus(status) && status.lastRoom != creep.pos.roomName) {
             // The creep just switched rooms and is now located on the new room's exit. Leave it to avoid oscillating.
             creep.logDebug("entering " + creep.pos.roomName + " to " + creep.memory.intent);
 
