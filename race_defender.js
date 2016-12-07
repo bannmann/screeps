@@ -1,6 +1,6 @@
 const BASE_IMPORTANCE = 0.8;
 const DEFENSE_FACTOR = 2;
-const BASE_COST = 260;
+const BASE_COST = 190;
 var creepDirectory = require("creepDirectory");
 
 module.exports = {
@@ -33,7 +33,7 @@ module.exports = {
             configuration.push(MOVE);
         }
         for (var i = 0; i < creepSize; i++) {
-            configuration.push(RANGED_ATTACK);
+            configuration.push(ATTACK);
         }
         return configuration;
     }

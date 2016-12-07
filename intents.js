@@ -5,6 +5,7 @@ var chargeSpawn = require("intent_chargeSpawn");
 var chargeTower = require("intent_chargeTower");
 var chargeController = require("intent_chargeController");
 var rangedAttack = require("intent_rangedAttack");
+var meleeAttack = require("intent_meleeAttack");
 var moveToClaimableRoom = require("intent_moveToClaimableRoom");
 var claimRoom = require("intent_claimRoom");
 var idleWorker = require("intent_idleWorker");
@@ -20,6 +21,7 @@ module.exports = {
     harvestEnergy: harvestEnergy,
     chargeController: chargeController,
     rangedAttack: rangedAttack,
+    meleeAttack: meleeAttack,
     moveToClaimableRoom: moveToClaimableRoom,
     claimRoom: claimRoom,
     idleWorker: idleWorker,

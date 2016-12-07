@@ -1,5 +1,5 @@
 const BASE_IMPORTANCE = 0.6;
-const COST_PER_SIZE = 260;
+const COST_PER_SIZE = 190;
 var armyManager = require("armyManager");
 
 module.exports = {
@@ -26,7 +26,7 @@ module.exports = {
             configuration.push(MOVE);
         }
         for (var i = 0; i < creepSize; i++) {
-            configuration.push(RANGED_ATTACK);
+            configuration.push(ATTACK);
         }
         return configuration;
     },
