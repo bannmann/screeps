@@ -14,7 +14,7 @@ module.exports = {
         if (creepDirectory.getRoomRaceCount(spawn.room.name, "worker") < BASE_WORKER_COUNT) {
             result = 0.9;
         } else if (this.areCreepsBusy(spawn.room) && this.isCpuUsageLow()) {
-            result = 0.7;
+            result = 0.1;
         }
 
         return result;
