@@ -14,12 +14,13 @@ module.exports = {
             var enemies = room.find(FIND_HOSTILE_CREEPS);
             enemies.forEach(
                 (enemy) => {
+                    var wounded = (enemy.hitsMax - enemy.hits) / enemy.hitsMax;
                     result.push(new Possibility({
                         creep: creep,
                         intent: this,
                         roomObject: enemy,
-                        shortDistanceFactor: 0.1,
-                        baseImportance: 0.8,
+                        shortDistanceFactor: 0.025,
+                        baseImportance: 0.7 + enemy.canHeal * 0.1 + wounded * 0.05,
                         preparationFunction: function() {
                             creep.memory.target = this.roomObject.id;
                         }
