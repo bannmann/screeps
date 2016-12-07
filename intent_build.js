@@ -13,17 +13,18 @@ module.exports = {
     },
     listPossibilities: function(creep) {
         var result = [];
-        for (var constructionSiteId in Game.constructionSites) {
-            var constructionSite = Game.constructionSites[constructionSiteId];
+        for (var siteId in Game.constructionSites) {
+            var site = Game.constructionSites[siteId];
 
-            if (constructionSite.room == creep.room || constructionSite.structureType == STRUCTURE_SPAWN) {
-                var muchProgress = constructionSite.progress / constructionSite.progressTotal;
+            if (site.room == creep.room ||
+                (site.structureType == STRUCTURE_SPAWN && site.room.find(FIND_HOSTILE_CREEPS).length == 0)) {
+                var muchProgress = site.progress / site.progressTotal;
                 var baseImportance = 0.4 + muchProgress * 0.1;
 
                 result.push(new Possibility({
                     creep: creep,
                     intent: this,
-                    roomObject: constructionSite,
+                    roomObject: site,
                     shortDistanceFactor: 0.05,
                     baseImportance: baseImportance,
                     preparationFunction: function() {
