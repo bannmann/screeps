@@ -5,6 +5,7 @@ const ACCEPTABLE_IDLE_CREEPS = 0;
 
 var logger = require("logger");
 var creepDirectory = require("creepDirectory");
+var flagDirectory = require("flagDirectory");
 
 module.exports = {
     getCurrentImportance: function(spawn) {
@@ -62,7 +63,18 @@ module.exports = {
 
         var mean = mean(this.data.pastCpuUsageValues);
 
-        var result = mean <= Game.cpu.limit * 0.7;
+        var result = mean <= this.getCpuLimit() * 0.7;
+        return result;
+    },
+
+    getCpuLimit: function() {
+        var result = Game.cpu.limit;
+
+        var flagInfo = flagDirectory.getFlagInfo("cpuLimit");
+        if (flagInfo) {
+            result = parseInt(flagInfo.value);
+        }
+
         return result;
     },
 

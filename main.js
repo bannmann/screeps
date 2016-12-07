@@ -11,6 +11,7 @@ var armyManager = require("armyManager");
 var workerRace = require("race_worker");
 var logger = require("logger");
 var creepDirectory = require("creepDirectory");
+var flagDirectory = require("flagDirectory");
 
 module.exports.loop = function() {
     PathFinder.use(true);
@@ -18,9 +19,11 @@ module.exports.loop = function() {
     safeModeManager.manage();
     memoryCleaner.clean();
 
-    armyManager.initialize();
     workerRace.onTickStarting();
     creepDirectory.onTickStarting();
+    flagDirectory.onTickStarting();
+
+    armyManager.initialize();
 
     towerManager.manage();
 
@@ -32,4 +35,5 @@ module.exports.loop = function() {
 
     workerRace.onTickEnding();
     creepDirectory.onTickEnding();
+    flagDirectory.onTickEnding();
 };
