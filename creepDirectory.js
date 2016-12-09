@@ -54,8 +54,5 @@ module.exports = {
             result = data.rooms[roomName][raceName];
         }
         return result;
-    },
-
-    onTickEnding: function() {
     }
 };

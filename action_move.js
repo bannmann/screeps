@@ -4,7 +4,10 @@ const ACCEPTABLE_PAUSES_PER_TARGET = 1;
 const MAX_PAUSE_LIST_LENGTH = 10;
 
 module.exports = {
-    pauseListsByTarget: Memory["CreepMovementPauses"] || {}, currentTickCreepPauses: {},
+    onTickStarting: function() {
+        this.pauseListsByTarget = Memory["CreepMovementPauses"] || {};
+        this.currentTickCreepPauses = {};
+    },
 
     isTargetJammed: function(roomObject) {
         var targetPositionString = this.makePositionString(roomObject.pos);
@@ -19,7 +22,7 @@ module.exports = {
         return result;
     },
 
-    savePauseStats: function() {
+    onTickEnding: function() {
         // Add pauses of this tick to existing lists
         for (var target in this.pauseListsByTarget) {
             var pauseList = this.pauseListsByTarget[target];
@@ -42,7 +45,6 @@ module.exports = {
         }
 
         Memory["CreepMovementPauses"] = this.pauseListsByTarget;
-        this.currentTickCreepPauses = {};
     },
 
     start: function(creep, path, intentRange, targetRoomPosition) {

@@ -17,9 +17,5 @@ module.exports = {
 
     getFlagInfo: function(name) {
         return data.flags[name];
-    },
-
-
-    onTickEnding: function() {
     }
 };
