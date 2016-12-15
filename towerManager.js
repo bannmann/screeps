@@ -1,4 +1,5 @@
-const DESIRED_STRENGTH = 10000;
+const DEFAULT_STRENGTH = 10000;
+var flagDirectory = require("flagDirectory");
 
 module.exports = {
     manage: function() {
@@ -73,11 +74,20 @@ module.exports = {
                     wallToRepair = wall;
                 }
             });
-        if (wallToRepair && wallToRepair.hits < DESIRED_STRENGTH) {
+        if (wallToRepair && wallToRepair.hits < this.getDesiredStrength()) {
             tower.repair(wallToRepair);
             result = true;
         }
 
+        return result;
+    },
+
+    getDesiredStrength: function() {
+        var result = DEFAULT_STRENGTH;
+        var flagInfo = flagDirectory.getFlagInfo("defensiveStrength");
+        if (flagInfo) {
+            result = parseInt(flagInfo.value);
+        }
         return result;
     },
 
@@ -96,7 +106,7 @@ module.exports = {
         return result;
     },
 
-    // "Defensive" structure means "has up to 3M hit points, only repair up to DESIRED_STRENGTH."
+    // "Defensive" structure means "has up to 3M hit points, only repair up to certain strength."
     isDefensiveStructure: function(structure) {
         return structure.structureType == STRUCTURE_WALL || structure.structureType == STRUCTURE_RAMPART;
     }
