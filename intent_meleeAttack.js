@@ -11,8 +11,7 @@ module.exports = {
         var result = [];
         for (var roomId in Game.rooms) {
             var room = Game.rooms[roomId];
-            var enemies = room.find(FIND_HOSTILE_CREEPS);
-            enemies.forEach(
+            _.each(room.find(FIND_HOSTILE_CREEPS),
                 (enemy) => {
                     var wounded = (enemy.hitsMax - enemy.hits) / enemy.hitsMax;
                     result.push(new Possibility({
@@ -25,6 +24,24 @@ module.exports = {
                             creep.memory.target = this.roomObject.id;
                         }
                     }));
+                });
+
+            _.each(room.find(FIND_HOSTILE_STRUCTURES),
+                (structure) => {
+                    var damaged = (structure.hitsMax - structure.hits) / structure.hitsMax;
+                    if (structure.structureType == STRUCTURE_TOWER || structure.structureType == STRUCTURE_SPAWN) {
+                        var towerFactor = (structure.structureType == STRUCTURE_TOWER) * 1;
+                        result.push(new Possibility({
+                            creep: creep,
+                            intent: this,
+                            roomObject: structure,
+                            shortDistanceFactor: 0.025,
+                            baseImportance: 0.6 + towerFactor * 0.1 + damaged * 0.05,
+                            preparationFunction: function() {
+                                creep.memory.target = this.roomObject.id;
+                            }
+                        }));
+                    }
                 });
         }
         return result;
