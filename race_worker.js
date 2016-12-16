@@ -2,6 +2,7 @@ const COST_PER_SIZE = 250;
 const BASE_WORKER_COUNT = 5;
 const HISTORY_LENGTH = 10;
 const ACCEPTABLE_IDLE_CREEPS = 0;
+const DEFAULT_CPU_LOAD = 0.7;
 
 var logger = require("logger");
 var creepDirectory = require("creepDirectory");
@@ -63,12 +64,12 @@ module.exports = {
 
         var mean = mean(this.data.pastCpuUsageValues);
 
-        var result = mean <= this.getCpuLimit() * 0.7;
+        var result = mean <= this.getCpuLimit();
         return result;
     },
 
     getCpuLimit: function() {
-        var result = Game.cpu.limit;
+        var result = Game.cpu.limit * DEFAULT_CPU_LOAD;
 
         var flagInfo = flagDirectory.getFlagInfo("cpuLimit");
         if (flagInfo) {
