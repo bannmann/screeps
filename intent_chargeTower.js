@@ -10,8 +10,7 @@ module.exports = {
     },
     listPossibilities: function(creep) {
         var result = [];
-        for (var structureId in Game.structures) {
-            var structure = Game.structures[structureId];
+        _.each(Game.structures, (structure) => {
             if (structure.structureType == STRUCTURE_TOWER && structure.room == creep.room) {
                 var freeEnergy = structure.energyCapacity -
                     Math.min(structure.energy + structure.calculateExpectedEnergy(), structure.energyCapacity);
@@ -33,7 +32,7 @@ module.exports = {
                     }));
                 }
             }
-        }
+        });
         return result;
     },
     pursue: function(creep) {

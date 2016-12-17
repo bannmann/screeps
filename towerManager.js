@@ -12,7 +12,7 @@ module.exports = {
                         filter: {structureType: STRUCTURE_TOWER}
                     });
 
-                towers.forEach(
+                _.each(towers,
                     (tower) => {
                         var done = false;
                         if (enemy) {
@@ -34,9 +34,8 @@ module.exports = {
     },
 
     pickEnemy: function(room) {
-        var enemies = room.find(FIND_HOSTILE_CREEPS);
         var result = null;
-        enemies.forEach(
+        _.each(room.find(FIND_HOSTILE_CREEPS),
             (enemy) => {
                 if (!result || enemy.canHeal && !result.canHeal || enemy.hits < result.hits) {
                     result = enemy;
@@ -68,7 +67,7 @@ module.exports = {
             });
         var wallToRepair = null;
 
-        walls.forEach(
+        _.each(walls,
             (wall) => {
                 if (!wallToRepair || wall.hits < wallToRepair.hits) {
                     wallToRepair = wall;

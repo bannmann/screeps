@@ -1,6 +1,5 @@
 module.exports.manage = function() {
-    for (var name in Game.rooms) {
-        var room = Game.rooms[name];
+    _.each(Game.rooms, (room) => {
         var controller = room.controller;
         if (controller &&
             controller.my &&
@@ -12,5 +11,5 @@ module.exports.manage = function() {
             0) {
             controller.activateSafeMode();
         }
-    }
+    });
 };

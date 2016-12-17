@@ -12,8 +12,7 @@ module.exports = {
     },
     listPossibilities: function(creep) {
         var result = [];
-        for (var structureId in Game.structures) {
-            var structure = Game.structures[structureId];
+        _.each(Game.structures, (structure) => {
             if (structure.structureType == STRUCTURE_CONTROLLER && structure.room == creep.room) {
                 // Increase panic level as ticksToDowngrade approaches threshold, but never surpass 1
                 var panicLevel = TICKS_TO_DOWNGRADE_THRESHOLD / Math.max(structure.ticksToDowngrade, TICKS_TO_DOWNGRADE_THRESHOLD);
@@ -32,7 +31,7 @@ module.exports = {
                     }
                 }));
             }
-        }
+        });
         return result;
     },
     pursue: function(creep) {

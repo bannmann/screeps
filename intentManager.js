@@ -2,16 +2,14 @@ var intents = require("intents");
 var intentsUtil = require("util_intents");
 
 module.exports.processIntents = function() {
-    for (var name in Game.creeps) {
-        var creep = Game.creeps[name];
+    _.each(Game.creeps, (creep) => {
         creep.logDebug("inspected by intentManager " + JSON.stringify(creep.pos));
 
         if (!creep.spawning) {
             if (!creep.memory.intent) {
                 creep.logDebug("needs intent");
                 var possibilities = [];
-                for (var intentName in intents) {
-                    var intent = intents[intentName];
+                _.each(intents, (intent, intentName) => {
                     if (intent.canBePerformedBy(creep)) {
                         creep.logDebug(intentName + ":");
                         var intentPossibilities = intent.listPossibilities(creep);
@@ -21,9 +19,9 @@ module.exports.processIntents = function() {
                             });
                         possibilities = possibilities.concat(intentPossibilities);
                     }
-                }
+                });
                 var possibility = null;
-                possibilities.forEach(
+                _.each(possibilities,
                     (current) => {
                         if (current.importance < 0 || current.importance > 1) {
                             Game.notify(
@@ -52,5 +50,5 @@ module.exports.processIntents = function() {
         }
 
         creep.logDebug("intentManager finish");
-    }
+    });
 };

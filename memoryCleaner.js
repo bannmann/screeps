@@ -1,7 +1,7 @@
 module.exports.clean = function() {
-    for (var name in Memory.creeps) {
+    _.each(Memory.creeps, (creepMemory, name) => {
         if (!Game.creeps[name]) {
             delete Memory.creeps[name];
         }
-    }
+    });
 };

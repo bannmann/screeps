@@ -13,8 +13,7 @@ module.exports = {
 
     listPossibilities: function(creep) {
         var result = [];
-        var sources = creep.room.find(FIND_SOURCES);
-        sources.forEach(
+        _.each(creep.room.find(FIND_SOURCES),
             (source) => {
                 if (source.energy > 0 && this.isHarvestable(source) && !this.isJammed(source)) {
                     var muchEnergyLeft = source.energy / source.energyCapacity;

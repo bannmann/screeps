@@ -9,8 +9,7 @@ module.exports = {
     },
     listPossibilities: function(creep) {
         var result = [];
-        for (var roomId in Game.rooms) {
-            var room = Game.rooms[roomId];
+        _.each(Game.rooms, (room) => {
             _.each(room.find(FIND_HOSTILE_CREEPS),
                 (enemy) => {
                     var wounded = (enemy.hitsMax - enemy.hits) / enemy.hitsMax;
@@ -43,7 +42,7 @@ module.exports = {
                         }));
                     }
                 });
-        }
+        });
         return result;
     },
     pursue: function(creep) {

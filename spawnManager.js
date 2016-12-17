@@ -9,8 +9,7 @@ module.exports = {
                 if (!spawn.spawning) {
                     var plan = null;
 
-                    for (var raceName in races) {
-                        var race = races[raceName];
+                    _.each(races, (race, raceName) => {
                         var importance = race.getCurrentImportance(spawn);
 
                         if (importance > 0 && (!plan || importance > plan.importance)) {
@@ -21,7 +20,7 @@ module.exports = {
                                 spawn: spawn
                             };
                         }
-                    }
+                    });
                     if (plan) {
                         var room = spawn.room;
                         var race = plan.race;

@@ -14,7 +14,7 @@ module.exports = {
             // Avoid picking up energy on room exit tiles as it makes creeps oscillate between two rooms.
             filter: (drop) => !this.placedOnRoomExit(drop)
         });
-        droppedEnergies.forEach(
+        _.each(droppedEnergies,
             (droppedEnergy) => {
                 var carryCapacity = creep.carryCapacity;
                 var droppedAmount = droppedEnergy.energy;

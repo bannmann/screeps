@@ -13,9 +13,7 @@ module.exports = {
     },
     listPossibilities: function(creep) {
         var result = [];
-        for (var siteId in Game.constructionSites) {
-            var site = Game.constructionSites[siteId];
-
+        _.each(Game.constructionSites, (site) => {
             if (site.room == creep.room ||
                 (site.structureType == STRUCTURE_SPAWN && site.room.find(FIND_HOSTILE_CREEPS).length == 0)) {
                 var muchProgress = site.progress / site.progressTotal;
@@ -32,7 +30,7 @@ module.exports = {
                     }
                 }));
             }
-        }
+        });
         return result;
     },
     pursue: function(creep) {

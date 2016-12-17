@@ -14,8 +14,7 @@ module.exports = {
     },
     listPossibilities: function(creep) {
         var result = [];
-        for (var structureId in Game.structures) {
-            var structure = Game.structures[structureId];
+        _.each(Game.structures, (structure) => {
             var isSpawnOrExtension = structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN;
             if (isSpawnOrExtension &&  structure.room == creep.room) {
 
@@ -42,7 +41,7 @@ module.exports = {
                     }));
                 }
             }
-        }
+        });
         return result;
     },
     pursue: function(creep) {

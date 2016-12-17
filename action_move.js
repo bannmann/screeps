@@ -24,9 +24,7 @@ module.exports = {
 
     onTickEnding: function() {
         // Add pauses of this tick to existing lists
-        for (var target in this.pauseListsByTarget) {
-            var pauseList = this.pauseListsByTarget[target];
-
+        _.each(this.pauseListsByTarget, (pauseList, target) => {
             var currentPause = this.currentTickCreepPauses[target] || 0;
             pauseList.push(currentPause);
 
@@ -36,13 +34,12 @@ module.exports = {
 
             // Skip this target in the loop below
             delete this.currentTickCreepPauses[target];
-        }
+        });
 
         // Add lists for targets that had no previous pauses
-        for (var target in this.currentTickCreepPauses) {
-            var currentPause = this.currentTickCreepPauses[target];
+        _.each(this.currentTickCreepPauses, (currentPause, target) => {
             this.pauseListsByTarget[target] = [currentPause];
-        }
+        });
 
         Memory["CreepMovementPauses"] = this.pauseListsByTarget;
     },

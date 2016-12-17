@@ -19,15 +19,15 @@ module.exports.apply = function() {
                 this.memory.incomingDeliveries = {};
             }
             var expectedEnergy = 0;
-            for (var creepId in this.memory.incomingDeliveries) {
+            _.each(this.memory.incomingDeliveries, (energy, creepId) => {
                 var creep = Game.getObjectById(creepId);
                 if (creep) {
-                    expectedEnergy += this.memory.incomingDeliveries[creepId];
+                    expectedEnergy += energy;
                 }
                 else {
                     delete this.memory.incomingDeliveries[creepId];
                 }
-            }
+            });
             return expectedEnergy;
         };
     }
