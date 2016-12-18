@@ -9,7 +9,8 @@ const LISTENER_MODULE_NAMES = [
     "race_worker",
     "creepDirectory",
     "flagDirectory",
-    "action_move"
+    "action_move",
+    "cpuUsage"
 ];
 
 const LISTENER_MODULES = _.map(LISTENER_MODULE_NAMES, require);
@@ -21,6 +22,7 @@ module.exports = {
 
     fireTickEnding: function() {
         this.callListeners("onTickEnding");
+        this.callListeners("afterTickEnding");
     },
 
     callListeners: function(methodName) {

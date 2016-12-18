@@ -2,11 +2,11 @@ const COST_PER_SIZE = 250;
 const BASE_WORKER_COUNT = 5;
 const HISTORY_LENGTH = 10;
 const ACCEPTABLE_IDLE_CREEPS = 0;
-const DEFAULT_CPU_LOAD = 0.7;
 
 var logger = require("logger");
 var creepDirectory = require("creepDirectory");
 var flagDirectory = require("flagDirectory");
+var cpuUsage = require("cpuUsage");
 
 module.exports = {
     getCurrentImportance: function(spawn) {
@@ -14,7 +14,7 @@ module.exports = {
 
         if (creepDirectory.getRoomRaceCount(spawn.room.name, "worker") < BASE_WORKER_COUNT) {
             result = 0.9;
-        } else if (this.areCreepsBusy(spawn.room) && this.isCpuUsageLow()) {
+        } else if (this.areCreepsBusy(spawn.room) && cpuUsage.isLow()) {
             result = 0.1;
         }
 
@@ -46,37 +46,6 @@ module.exports = {
 
     belowSimulationCreepCount: function() {
         return creepDirectory.getOverallCount() < 50;
-    },
-
-    isCpuUsageLow: function() {
-        function mean(array) {
-            var result = 0;
-            if (array.length) {
-                var sum = 0;
-                _.each(
-                    array, (value) => {
-                        sum += value;
-                    });
-                result = sum / array.length;
-            }
-            return result;
-        }
-
-        var mean = mean(this.data.pastCpuUsageValues);
-
-        var result = mean <= this.getCpuLimit();
-        return result;
-    },
-
-    getCpuLimit: function() {
-        var result = Game.cpu.limit * DEFAULT_CPU_LOAD;
-
-        var flagInfo = flagDirectory.getFlagInfo("cpuLimit");
-        if (flagInfo) {
-            result = parseInt(flagInfo.value);
-        }
-
-        return result;
     },
 
     getCost: function(room) {
@@ -120,10 +89,6 @@ module.exports = {
             this.data.rooms = {};
         }
 
-        if (!this.data.pastCpuUsageValues) {
-            this.data.pastCpuUsageValues = [];
-        }
-
         _.eachRight(this.data.rooms,
             (roomData, roomName) =>{
                 if (!Game.rooms[roomName]) {
@@ -155,11 +120,6 @@ module.exports = {
                     roomData.pastIdleCreepCounts.shift();
                 }
             });
-
-        this.data.pastCpuUsageValues.push(Game.cpu.getUsed());
-        while (this.data.pastCpuUsageValues.length > HISTORY_LENGTH) {
-            this.data.pastCpuUsageValues.shift();
-        }
 
         Memory.WorkerRace = this.data;
     }
