@@ -12,8 +12,8 @@ module.exports = {
                         filter: {structureType: STRUCTURE_TOWER}
                     });
 
-                _.each(towers,
-                    (tower) => {
+                _.each(
+                    towers, (tower) => {
                         var done = false;
                         if (enemy) {
                             tower.attack(enemy);
@@ -35,8 +35,8 @@ module.exports = {
 
     pickEnemy: function(room) {
         var result = null;
-        _.each(room.find(FIND_HOSTILE_CREEPS),
-            (enemy) => {
+        _.each(
+            room.find(FIND_HOSTILE_CREEPS), (enemy) => {
                 if (!result || enemy.canHeal && !result.canHeal || enemy.hits < result.hits) {
                     result = enemy;
                 }
@@ -47,9 +47,10 @@ module.exports = {
     healCreeps: function(tower) {
         var result = false;
 
-        var creepToHeal = tower.pos.findClosestByRange(FIND_MY_CREEPS, {
-            filter: (creep) => creep.hits < creep.hitsMax
-        });
+        var creepToHeal = tower.pos.findClosestByRange(
+            FIND_MY_CREEPS, {
+                filter: (creep) => creep.hits < creep.hitsMax
+            });
         if (creepToHeal) {
             tower.heal(creepToHeal);
             result = true;
@@ -67,8 +68,8 @@ module.exports = {
             });
         var wallToRepair = null;
 
-        _.each(walls,
-            (wall) => {
+        _.each(
+            walls, (wall) => {
                 if (!wallToRepair || wall.hits < wallToRepair.hits) {
                     wallToRepair = wall;
                 }
@@ -95,7 +96,8 @@ module.exports = {
 
         var damagedStructure = tower.pos.findClosestByRange(
             FIND_STRUCTURES, {
-                filter: (structure) => !this.isDefensiveStructure(structure) && structure.hits < structure.hitsMax
+                filter: (structure) => !this.isDefensiveStructure(structure) &&
+                structure.structureType != STRUCTURE_ROAD && structure.hits < structure.hitsMax
             });
         if (damagedStructure) {
             tower.repair(damagedStructure);
