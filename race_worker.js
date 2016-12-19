@@ -1,5 +1,5 @@
 const COST_PER_SIZE = 250;
-const BASE_WORKER_COUNT = 5;
+const BASE_WORKER_COUNT = 2;
 const HISTORY_LENGTH = 10;
 const ACCEPTABLE_IDLE_CREEPS = 0;
 
@@ -12,10 +12,12 @@ module.exports = {
     getCurrentImportance: function(spawn) {
         var result = 0;
 
-        if (creepDirectory.getRoomRaceCount(spawn.room.name, "worker") < BASE_WORKER_COUNT) {
-            result = 0.9;
-        } else if (this.areCreepsBusy(spawn.room) && cpuUsage.isLow()) {
-            result = 0.1;
+        if (this.areCreepsBusy(spawn.room) && cpuUsage.isLow()) {
+            if (creepDirectory.getRoomRaceCount(spawn.room.name, "worker") < BASE_WORKER_COUNT) {
+                result = 0.9;
+            } else {
+                result = 0.1;
+            }
         }
 
         return result;
