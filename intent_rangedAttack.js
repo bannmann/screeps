@@ -9,22 +9,22 @@ module.exports = {
     },
     listPossibilities: function(creep) {
         var result = [];
-        _.each(Game.rooms, (room) => {
-            _.each(room.find(FIND_HOSTILE_CREEPS),
-                (enemy) => {
-                    var wounded = (enemy.hitsMax - enemy.hits) / enemy.hitsMax;
-                    result.push(new Possibility({
-                        creep: creep,
-                        intent: this,
-                        roomObject: enemy,
-                        shortDistanceFactor: 0.025,
-                        baseImportance: 0.7 + enemy.canHeal * 0.1 + wounded * 0.05,
-                        preparationFunction: function() {
-                            creep.memory.target = this.roomObject.id;
-                        }
-                    }));
-                });
-        });
+
+        _.each(creep.room.find(FIND_HOSTILE_CREEPS),
+            (enemy) => {
+                var wounded = (enemy.hitsMax - enemy.hits) / enemy.hitsMax;
+                result.push(new Possibility({
+                    creep: creep,
+                    intent: this,
+                    roomObject: enemy,
+                    shortDistanceFactor: 0.025,
+                    baseImportance: 0.7 + enemy.canHeal * 0.1 + wounded * 0.05,
+                    preparationFunction: function() {
+                        creep.memory.target = this.roomObject.id;
+                    }
+                }));
+            });
+
         return result;
     },
     pursue: function(creep) {
