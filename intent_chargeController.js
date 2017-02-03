@@ -1,4 +1,4 @@
-const TICKS_TO_DOWNGRADE_THRESHOLD = 100;
+const TICKS_TO_DOWNGRADE_THRESHOLD = 500;
 
 var moveAction = require("action_move");
 var intentsUtil = require("util_intents");
@@ -18,7 +18,7 @@ module.exports = {
                 var panicLevel = TICKS_TO_DOWNGRADE_THRESHOLD / Math.max(structure.ticksToDowngrade, TICKS_TO_DOWNGRADE_THRESHOLD);
 
                 // Usually, this intent is unimportant, but when it panics, it's very, very important
-                var importance = 0.1 + panicLevel * 0.7;
+                var importance = 0.1 + panicLevel * 0.85;
 
                 result.push(new Possibility({
                     creep: creep,
