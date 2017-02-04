@@ -12,6 +12,7 @@ var idleWorker = require("intent_idleWorker");
 var idleNonWorker = require("intent_idleNonWorker");
 var guidedScouting = require("intent_guidedScouting");
 var offensive = require("intent_offensive");
+var signController = require("intent_signController");
 
 module.exports = {
     chargeSpawn: chargeSpawn,
@@ -27,5 +28,6 @@ module.exports = {
     idleWorker: idleWorker,
     idleNonWorker: idleNonWorker,
     guidedScouting: guidedScouting,
-    offensive: offensive
+    offensive: offensive,
+    signController: signController
 };
