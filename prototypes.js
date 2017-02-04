@@ -1,8 +1,14 @@
-var memory = require("prototype_memory");
-var energyManagement = require("prototype_energyManagement");
-var creepGroup = require("prototype_creepGroup");
-var creepBody = require("prototype_creepBody");
-var creepDebug = require("prototype_creepDebug");
-var gameUserName = require("prototype_gameUserName");
+const PROTOTYPE_NAMES = [
+    "creepBody",
+    "creepDebug",
+    "creepGroup",
+    "energyManagement",
+    "gameUserName",
+    "memory"
+];
 
-module.exports = [memory, energyManagement, creepGroup, creepBody, creepDebug, gameUserName];
+module.exports = [];
+
+_.each(PROTOTYPE_NAMES, (prototypeName) => {
+    module.exports.push(require("prototype_" + prototypeName));
+});
