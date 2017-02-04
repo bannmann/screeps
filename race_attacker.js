@@ -1,5 +1,6 @@
 const BASE_IMPORTANCE = 0.6;
 const COST_PER_SIZE = 190;
+const PARTS_PER_SIZE = 4;
 var armyManager = require("armyManager");
 
 module.exports = {
@@ -31,7 +32,8 @@ module.exports = {
         return configuration;
     },
     getAppropriateCreepSize(room) {
-        var result = Math.floor(room.energyCapacityAvailable / COST_PER_SIZE);
+        var maximumSize = Math.floor(room.energyCapacityAvailable / COST_PER_SIZE);
+        var result = Math.min(maximumSize, Math.floor(50 / PARTS_PER_SIZE));
         return result;
     }
 };

@@ -1,6 +1,7 @@
 const BASE_IMPORTANCE = 0.8;
+const PARTS_PER_SIZE = 4;
 const DEFENSE_FACTOR = 2;
-const BASE_COST = 190;
+const COST_PER_SIZE = 190;
 var creepDirectory = require("creepDirectory");
 
 module.exports = {
@@ -18,12 +19,14 @@ module.exports = {
 
         return result;
     },
+
     getCost: function(room) {
         var energy = room.energyAvailable;
-        return Math.max(BASE_COST, energy - (energy % BASE_COST));
+        return Math.max(COST_PER_SIZE, energy - (energy % COST_PER_SIZE));
     },
+
     getBody: function(room) {
-        var creepSize = Math.floor(room.energyAvailable / BASE_COST);
+        var creepSize = this.getAppropriateCreepSize(room);
         var configuration = [];
         for (var i = 0; i < creepSize; i++) {
             configuration.push(TOUGH);
@@ -36,5 +39,11 @@ module.exports = {
             configuration.push(ATTACK);
         }
         return configuration;
+    },
+
+    getAppropriateCreepSize(room) {
+        var maximumSize = Math.floor(room.energyAvailable / COST_PER_SIZE);
+        var result = Math.min(maximumSize, Math.floor(50 / PARTS_PER_SIZE));
+        return result;
     }
 };

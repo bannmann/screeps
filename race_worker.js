@@ -1,4 +1,5 @@
 const COST_PER_SIZE = 250;
+const PARTS_PER_SIZE = 4;
 const BASE_WORKER_COUNT = 2;
 const HISTORY_LENGTH = 10;
 const ACCEPTABLE_IDLE_CREEPS = 0;
@@ -73,12 +74,12 @@ module.exports = {
 
     getAppropriateCreepSize(room) {
         var maximumSize = Math.floor(room.energyCapacityAvailable / COST_PER_SIZE);
-        var result = maximumSize;
+        var result = Math.min(maximumSize, Math.floor(50 / PARTS_PER_SIZE));
 
         // If no or few workers are left, we should quickly spawn small ones that can help us gain energy.
         var activeWorkers = creepDirectory.getRoomRaceCount(room.name, "worker");
         if (activeWorkers < BASE_WORKER_COUNT) {
-            result = Math.min(activeWorkers + 1, maximumSize);
+            result = Math.min(activeWorkers + 1, result);
         }
 
         return result;
