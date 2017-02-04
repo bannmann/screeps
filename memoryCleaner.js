@@ -4,4 +4,17 @@ module.exports.clean = function() {
             delete Memory.creeps[name];
         }
     });
+
+    if (Game.time % 100 == 0) {
+        // See also prototype_memory
+        _.each(["extensions", "towers"], (blockName) => {
+            var entries = Memory[blockName];
+            _.eachRight(entries, (entry, id) => {
+                if (Game.getObjectById(id) == null) {
+                    delete entries[id];
+                }
+            });
+        });
+    }
+
 };
