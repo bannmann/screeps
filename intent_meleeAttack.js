@@ -25,7 +25,12 @@ module.exports = {
                 }));
             });
 
-        _.each(creep.room.find(FIND_HOSTILE_STRUCTURES),
+        var hostileStructures = creep.room.find(FIND_HOSTILE_STRUCTURES, {
+            // Controllers are included in FIND_HOSTILE_STRUCTURES, but are invincible
+            filter: (structure) => structure.structureType != STRUCTURE_CONTROLLER
+        });
+
+        _.each(hostileStructures,
             (structure) => {
                 var towerFactor = (structure.structureType == STRUCTURE_TOWER) * 1;
                 var spawnFactor = (structure.structureType == STRUCTURE_SPAWN) * 1;
