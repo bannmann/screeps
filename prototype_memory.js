@@ -22,4 +22,6 @@ module.exports.apply = function() {
     // See also memoryCleaner
     apply(StructureExtension.prototype, "extensions");
     apply(StructureTower.prototype, "towers");
+    apply(StructureRampart.prototype, "ramparts");
+    apply(StructureWall.prototype, "walls");
 };

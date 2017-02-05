@@ -9,6 +9,7 @@ const LISTENER_MODULE_NAMES = [
     "race_worker",
     "creepDirectory",
     "flagDirectory",
+    "enemyDirectory",
     "action_move",
     "cpuUsage"
 ];
