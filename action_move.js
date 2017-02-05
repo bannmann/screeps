@@ -131,7 +131,7 @@ module.exports = {
     },
 
     makePositionString: function(positionObject) {
-        return positionObject.x + "-" + positionObject.y;
+        return positionObject.roomName + "-" + positionObject.x + "-" + positionObject.y;
     },
 
     publishPause: function(status) {
