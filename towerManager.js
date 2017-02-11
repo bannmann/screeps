@@ -1,6 +1,6 @@
 const MINIMUM_STRENGTH = 1000;
 const REINFORCEMENT_MIN_PEACE_TICKS = 100;
-const REINFORCEMENT_INTERVAL = 50;
+const REINFORCEMENT_INTERVAL = 20;
 var flagDirectory = require("flagDirectory");
 var enemyDirectory = require("enemyDirectory");
 var Objects = require("util_objects");
