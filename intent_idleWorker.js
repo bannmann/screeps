@@ -20,8 +20,19 @@ module.exports = {
         return result;
     },
     pursue: function(creep) {
-        creep.say("Zzzzzz....");
         workerRace.registerIdleCreep(creep);
         intentsUtil.reset(creep);
+        this.showIndicator(creep);
+    },
+    showIndicator: function(creep) {
+        creep.room.visual.circle(
+            creep.pos.x,
+            creep.pos.y,
+            {
+                radius: 0.33,
+                fill: "lime",
+                opacity: 1
+            });
+        creep.room.visual.text("\u258c\u258c", creep.pos.x + 0.05, creep.pos.y + 0.1, { color: "black", size: 0.3 });
     }
 };

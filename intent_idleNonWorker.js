@@ -21,5 +21,6 @@ module.exports = {
     },
     pursue: function(creep) {
         intentsUtil.reset(creep);
+        idleWorkerIntent.showIndicator(creep);
     }
 };
