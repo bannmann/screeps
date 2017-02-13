@@ -1,6 +1,7 @@
 var moveAction = require("action_move");
 var intentsUtil = require("util_intents");
 var Possibility = require("possibility");
+var Objects = require("util_objects");
 
 module.exports = {
     name: "signController",
@@ -31,7 +32,8 @@ module.exports = {
         return this.shouldApplySign(controller) || this.shouldRemoveSign(controller);
     },
     shouldApplySign: function(controller) {
-        return !controller.sign || controller.sign.text != Memory.ROOM_SIGNATURE;
+        var sign = Objects.loadPath(controller, ["sign"], "text") || "";
+        return sign != Memory.ROOM_SIGNATURE;
     },
     shouldRemoveSign: function(controller) {
         return Memory.ROOM_SIGNATURE == "" && controller.sign;
