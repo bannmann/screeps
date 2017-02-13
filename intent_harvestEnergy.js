@@ -35,13 +35,19 @@ module.exports = {
     },
 
     isHarvestable: function(source) {
+        var result = true;
+
         var controller = source.room.controller;
+        if (controller)
+        {
+            var myRoom = controller.my;
+            var neutralRoom = !!controller.owner;
+            var reservedForOtherPlayer = controller.reservation && controller.reservation.username != Game.username;
 
-        var myRoom = controller.my;
-        var neutralRoom = !!controller.owner;
-        var reservedForOtherPlayer = controller.reservation && controller.reservation.username != Game.username;
+            result = myRoom || neutralRoom && !reservedForOtherPlayer;
+        }
 
-        return myRoom || neutralRoom && !reservedForOtherPlayer;
+        return result;
     },
 
     isJammed: function(source) {
