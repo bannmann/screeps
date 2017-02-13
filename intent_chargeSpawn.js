@@ -46,7 +46,10 @@ module.exports = {
     },
     pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
-        if (creep.carry.energy == 0 || target.energy == target.energyCapacity) {
+        if (!target) {
+            intentsUtil.reset(creep);
+        }
+        else if (creep.carry.energy == 0 || target.energy == target.energyCapacity) {
             target.deregisterDelivery(creep);
             intentsUtil.reset(creep);
         }
