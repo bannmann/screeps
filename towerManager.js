@@ -65,7 +65,10 @@ module.exports = {
     },
 
     /**
-     * Repairs previously damaged defenses. Also increases hit points of new defenses to MINIMUM_STRENGTH.
+     * Repairs previously damaged defenses, but takes care to not reinforce them (to avoid rampart decay leading to
+     * repairs which increase rampart strength way beyond wall strength).
+     *
+     * Also increases hit points of new defenses to MINIMUM_STRENGTH.
      */
     repairDefenses: function(tower, defenses) {
         var result = false;
@@ -76,7 +79,9 @@ module.exports = {
         _.each(
             defenses, (defense) => {
                 var damageTaken = this.getDamageTaken(defense);
-                if (damageTaken > highestDamageTaken) {
+                var repairAmount = this.calculateRepairAmount(tower, defense);
+                // We cannot choose how much to repair a structure, so we wait until damage equals the repair amount.
+                if (damageTaken >= repairAmount && damageTaken > highestDamageTaken) {
                     defenseToRepair = defense;
                     highestDamageTaken = damageTaken;
                 }
@@ -87,6 +92,18 @@ module.exports = {
             result = true;
         }
 
+        return result;
+    },
+
+    calculateRepairAmount: function(tower, structure) {
+        var result = TOWER_POWER_REPAIR;
+        var range = Math.max(Math.abs(structure.pos.x - tower.pos.x), Math.abs(structure.pos.y - tower.pos.y));
+        if (range > TOWER_OPTIMAL_RANGE) {
+            range = Math.min(range, TOWER_FALLOFF_RANGE);
+            result -=
+                result * TOWER_FALLOFF * (range - TOWER_OPTIMAL_RANGE) / (TOWER_FALLOFF_RANGE - TOWER_OPTIMAL_RANGE);
+            result = Math.floor(result);
+        }
         return result;
     },
 
@@ -129,7 +146,7 @@ module.exports = {
 
             if (defenseToReinforce) {
                 tower.repair(defenseToReinforce);
-                this.trackReinforcementOccurred(tower.room)
+                this.trackReinforcementOccurred(tower.room);
                 result = true;
             }
         }
