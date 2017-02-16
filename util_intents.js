@@ -6,6 +6,7 @@ module.exports = {
         delete creep.memory.intent;
         delete creep.memory.target;
         delete creep.memory.movementStatus;
+        delete creep.memory.intentStatus;
         creep.logDebug("reset");
     },
     isCreepSuitableForIntent: function(creep, intentName) {

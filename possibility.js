@@ -8,8 +8,9 @@ module.exports = function(parameters) {
     var shortDistanceFactor = parameters.shortDistanceFactor;
     var baseImportance = parameters.baseImportance;
     var preparationFunction = parameters.preparationFunction;
+    var intentStatus = parameters.intentStatus || {};
 
-    this.debug = { intentName: intent.name };
+    this.debug = { intentName: intent.name, intentStatus: intentStatus };
 
     var path;
     if (roomObject) {
@@ -23,6 +24,7 @@ module.exports = function(parameters) {
     }
 
     this.choose = function() {
+        creep.memory.intentStatus = intentStatus;
         if (preparationFunction) preparationFunction.call(parameters);
         activateIntent(intent);
     }
