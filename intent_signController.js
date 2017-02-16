@@ -47,8 +47,8 @@ module.exports = {
             if (room.neutral) {
                 signature = "";
             }
-            creep.signController(room.controller, signature);
-            intentsUtil.reset(creep);
+            var signResult = creep.signController(room.controller, signature);
+            intentsUtil.finish(creep, this, signResult);
         }
     }
 };

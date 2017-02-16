@@ -37,15 +37,13 @@ module.exports = {
     pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
         if (creep.carry.energy == 0) {
-            intentsUtil.reset(creep);
+            intentsUtil.abort(creep, this, "no energy");
         }
         else if (moveAction.isActive(creep)) {
             moveAction.perform(creep);
         }
         else {
-            if (creep.upgradeController(target) != OK) {
-                intentsUtil.reset(creep);
-            }
+            intentsUtil.finish(creep, this, creep.upgradeController(target));
         }
     }
 };

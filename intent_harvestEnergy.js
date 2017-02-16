@@ -56,16 +56,20 @@ module.exports = {
 
     pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
-        if (creep.carry.energy == creep.carryCapacity || target == null || target.energy == 0) {
+        if (target == null) {
+            intentsUtil.abort(creep, this, "missing target " + creep.memory.target);
+        }
+        else if (target.energy == 0) {
+            intentsUtil.abort(creep, this, "empty target " + creep.memory.target);
+        }
+        else if (creep.carry.energy == creep.carryCapacity) {
             intentsUtil.reset(creep);
         }
         else if (moveAction.isActive(creep)) {
             moveAction.perform(creep);
         }
         else {
-            if (creep.harvest(target) != OK) {
-                intentsUtil.reset(creep);
-            }
+            intentsUtil.finish(creep, this, creep.harvest(target));
         }
     }
 };

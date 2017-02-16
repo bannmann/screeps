@@ -61,11 +61,11 @@ module.exports = {
             intentsUtil.reset(creep);
         }
         else {
-            var result = creep.attack(target);
-            if (result == ERR_NOT_IN_RANGE) {
+            var attackResult = creep.attack(target);
+            if (attackResult == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target);
-            } else if (result != OK) {
-                intentsUtil.reset(creep);
+            } else if (attackResult != OK) {
+                intentsUtil.abort(creep, this, "attackResult " + attackResult);
             }
         }
     }

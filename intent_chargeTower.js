@@ -37,17 +37,18 @@ module.exports = {
     },
     pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
-        if (creep.carry.energy == 0 || target.energy == target.energyCapacity) {
-            target.deregisterEnergyTransaction(creep);
-            intentsUtil.reset(creep);
+        if (creep.carry.energy == 0) {
+            intentsUtil.abort(creep, this, "no energy");
+        }
+        else if (target.energy == target.energyCapacity) {
+            intentsUtil.abort(creep, this, "target " + creep.memory.target + " being full");
         }
         else if (moveAction.isActive(creep)) {
             moveAction.perform(creep);
         }
         else {
-            if (creep.transfer(target, RESOURCE_ENERGY) != OK) {
-                intentsUtil.reset(creep);
-            }
+            target.deregisterEnergyTransaction(creep);
+            intentsUtil.finish(creep, this, creep.transfer(target, RESOURCE_ENERGY));
         }
     }
 };

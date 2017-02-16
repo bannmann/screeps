@@ -35,16 +35,17 @@ module.exports = {
     },
     pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
-        if (!target || creep.carry.energy == 0) {
-            intentsUtil.reset(creep);
+        if (!target) {
+            intentsUtil.abort(creep, this, "missing target " + creep.memory.target);
+        }
+        else if (creep.carry.energy == 0) {
+            intentsUtil.abort(creep, this, "no energy");
         }
         else if (moveAction.isActive(creep)) {
             moveAction.perform(creep);
         }
         else {
-            if (creep.build(target) != OK) {
-                intentsUtil.reset(creep);
-            }
+            intentsUtil.finish(creep, this, creep.build(target));
         }
     }
 };

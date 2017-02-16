@@ -30,22 +30,17 @@ module.exports = {
     },
     pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
-        if (target.my) {
-            intentsUtil.reset(creep);
-
-            _.each(Game.flags,
-                (flag)=> {
-                    if (flag.name.startsWith("claim")) {
-                        flag.remove();
-                    }
-                });
-        }
-        else if (moveAction.isActive(creep)) {
+        if (moveAction.isActive(creep)) {
             moveAction.perform(creep, this);
         }
         else {
-            if (creep.claimController(target) != OK) {
-                intentsUtil.reset(creep);
+            if (intentsUtil.finish(creep, this, creep.claimController(target))) {
+                _.each(Game.flags,
+                    (flag)=> {
+                        if (flag.name.startsWith("claim")) {
+                            flag.remove();
+                        }
+                    });
             }
         }
     }

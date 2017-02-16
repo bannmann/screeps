@@ -42,16 +42,14 @@ module.exports = {
     },
     pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
-        if (!target || creep.carry.energy == creep.carryCapacity) {
-            intentsUtil.reset(creep);
+        if (!target) {
+            intentsUtil.abort(creep, this, "missing target " + creep.memory.target);
         }
         else if (moveAction.isActive(creep)) {
             moveAction.perform(creep);
         }
         else {
-            if (creep.pickup(target) != OK) {
-                intentsUtil.reset(creep);
-            }
+            intentsUtil.finish(creep, this, creep.pickup(target));
         }
     }
 };
