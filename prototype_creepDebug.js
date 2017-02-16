@@ -7,7 +7,7 @@ module.exports.apply = function() {
     }
 
     Creep.prototype.logDebug = function(message) {
-        if (("debug-" + this.name) in Game.flags) {
+        if (("debug-" + this.name) in Game.flags || ("debug-" + this.room.name) in Game.flags) {
             this._log(message);
         }
     }
