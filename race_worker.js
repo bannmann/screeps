@@ -10,15 +10,19 @@ var flagDirectory = require("flagDirectory");
 var cpuUsage = require("cpuUsage");
 
 module.exports = {
-    getCurrentImportance: function(spawn) {
-        var result = 0;
+    getPlans: function(room) {
+        var result = [];
 
-        if (this.areCreepsBusy(spawn.room) && cpuUsage.isLow()) {
-            if (creepDirectory.getRoomRaceCount(spawn.room.name, "worker") < BASE_WORKER_COUNT) {
+        if (this.areCreepsBusy(room) && cpuUsage.isLow()) {
+            if (creepDirectory.getRoomRaceCount(room.name, "worker") < BASE_WORKER_COUNT) {
                 result = 0.9;
             } else {
                 result = 0.1;
             }
+            result.push({
+                importance: importance,
+                body: this.getBody(room)
+            });
         }
 
         return result;

@@ -4,18 +4,19 @@ const PARTS_PER_SIZE = 4;
 var armyManager = require("armyManager");
 
 module.exports = {
-    getCurrentImportance: function(spawn) {
-        var result = 0;
+    getPlans: function(room) {
+        var result = [];
 
         if (armyManager.isRecruiting()) {
-            result = BASE_IMPORTANCE;
+            result.push({
+                importance: BASE_IMPORTANCE,
+                body: this.getBody(room)
+            });
         }
 
         return result;
     },
-    getCost: function(room) {
-        return this.getAppropriateCreepSize(room) * COST_PER_SIZE;
-    },
+
     getBody: function(room) {
         var creepSize = this.getAppropriateCreepSize(room);
         var configuration = [];
@@ -31,6 +32,7 @@ module.exports = {
         }
         return configuration;
     },
+
     getAppropriateCreepSize(room) {
         var maximumSize = Math.floor(room.energyCapacityAvailable / COST_PER_SIZE);
         var result = Math.min(maximumSize, Math.floor(50 / PARTS_PER_SIZE));

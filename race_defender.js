@@ -5,24 +5,21 @@ const COST_PER_SIZE = 190;
 var creepDirectory = require("creepDirectory");
 
 module.exports = {
-    getCurrentImportance: function(spawn) {
-        var result = 0;
+    getPlans: function(room) {
+        var result = [];
 
-        var room = spawn.room;
         var enemies = room.find(FIND_HOSTILE_CREEPS).length;
         if (enemies > 0) {
             var activeDefenders = creepDirectory.getRoomRaceCount(room.name, "defender");
             if (activeDefenders < enemies * DEFENSE_FACTOR) {
-                result = BASE_IMPORTANCE;
+                result.push({
+                    importance: BASE_IMPORTANCE,
+                    body: this.getBody(room)
+                });
             }
         }
 
         return result;
-    },
-
-    getCost: function(room) {
-        var energy = room.energyAvailable;
-        return Math.max(COST_PER_SIZE, energy - (energy % COST_PER_SIZE));
     },
 
     getBody: function(room) {
@@ -41,7 +38,7 @@ module.exports = {
         return configuration;
     },
 
-    getAppropriateCreepSize(room) {
+    getAppropriateCreepSize: function(room) {
         var maximumSize = Math.floor(room.energyAvailable / COST_PER_SIZE);
         var result = Math.min(maximumSize, Math.floor(50 / PARTS_PER_SIZE));
         return result;

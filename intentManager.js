@@ -10,7 +10,7 @@ module.exports.processIntents = function() {
                 creep.logDebug("needs intent");
                 var possibilities = [];
                 _.each(intents, (intent, intentName) => {
-                    if (intent.canBePerformedBy(creep)) {
+                    if (intentsUtil.isCreepSuitableForIntent(creep, intentName) && intent.canBePerformedBy(creep)) {
                         creep.logDebug(intentName + ":");
                         var intentPossibilities = intent.listPossibilities(creep);
                         _.each(
@@ -34,8 +34,14 @@ module.exports.processIntents = function() {
                             possibility = current;
                         }
                     });
-                creep.logDebug("chosing " + JSON.stringify(possibility));
-                possibility.choose();
+                if (possibility) {
+                    creep.logDebug("chosing " + JSON.stringify(possibility));
+                    possibility.choose();
+                } else {
+                    Game.notify(
+                        "found no suitable intent for creep " + creep.name + ", memory " +
+                        JSON.stringify(creep.memory));
+                }
             }
 
             creep.logDebug("detected " + creep.memory.intent);
