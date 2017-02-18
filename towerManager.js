@@ -18,24 +18,26 @@ module.exports = {
 
                 _.each(
                     towers, (tower) => {
-                        var done = false;
-                        if (enemy) {
-                            tower.attack(enemy);
-                            done = true;
-                        }
+                        if (tower.energy >= 10) {
+                            var done = false;
+                            if (enemy) {
+                                tower.attack(enemy);
+                                done = true;
+                            }
 
-                        var defenses = this.getDefenses(tower);
-                        if (!done) {
-                            done = this.repairDefenses(tower, defenses);
-                        }
-                        if (!done) {
-                            done = this.healCreeps(tower);
-                        }
-                        if (!done) {
-                            done = this.repairBuildings(tower);
-                        }
-                        if (!done) {
-                            done = this.reinforceDefenses(tower, defenses);
+                            var defenses = this.getDefenses(tower);
+                            if (!done) {
+                                done = this.repairDefenses(tower, defenses);
+                            }
+                            if (!done) {
+                                done = this.healCreeps(tower);
+                            }
+                            if (!done) {
+                                done = this.repairBuildings(tower);
+                            }
+                            if (!done) {
+                                done = this.reinforceDefenses(tower, defenses);
+                            }
                         }
                     });
             });
@@ -75,15 +77,17 @@ module.exports = {
 
         var defenseToRepair = null;
 
-        var highestDamageTaken = 0;
+        var lowestHits = Number.MAX_VALUE;
         _.each(
             defenses, (defense) => {
-                var damageTaken = this.getDamageTaken(defense);
-                var repairAmount = this.calculateRepairAmount(tower, defense);
-                // We cannot choose how much to repair a structure, so we wait until damage equals the repair amount.
-                if (damageTaken >= repairAmount && damageTaken > highestDamageTaken) {
-                    defenseToRepair = defense;
-                    highestDamageTaken = damageTaken;
+                if (defense.hits < lowestHits) {
+                    var damageTaken = this.getDamageTaken(defense);
+                    var repairAmount = this.calculateRepairAmount(tower, defense);
+                    // We cannot choose how much to repair, so we wait until damage equals the repair amount.
+                    if (damageTaken >= repairAmount) {
+                        defenseToRepair = defense;
+                        lowestHits = defense.hits;
+                    }
                 }
             });
 
@@ -108,11 +112,7 @@ module.exports = {
     },
 
     getDamageTaken: function(wall) {
-        if (!wall.memory.strength) {
-            wall.memory.strength = Math.max(wall.hits, MINIMUM_STRENGTH);
-        } else if (wall.memory.strength < wall.hits) {
-            wall.memory.strength = wall.hits;
-        }
+        wall.memory.strength = Math.max(wall.memory.strength | 0, wall.hits, MINIMUM_STRENGTH);
         return wall.memory.strength - wall.hits;
     },
 
