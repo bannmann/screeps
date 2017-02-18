@@ -17,7 +17,7 @@ module.exports = {
                 if (freeEnergy > 0) {
                     var needsMuchEnergy = freeEnergy / structure.energyCapacity;
 
-                    var importance = 0.25 + needsMuchEnergy * 0.1;
+                    var importance = 0.2 + needsMuchEnergy * 0.3;
 
                     result.push(new Possibility({
                         creep: creep,
