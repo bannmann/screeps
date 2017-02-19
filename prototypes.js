@@ -5,7 +5,9 @@ const PROTOTYPE_NAMES = [
     "energyTransactions",
     "gameUserName",
     "memory",
-    "roomOwnership"
+    "roomOwnership",
+    "roomPositionDirection",
+    "roomPositionObstacle"
 ];
 
 module.exports = [];
