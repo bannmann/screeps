@@ -13,7 +13,7 @@ module.exports = {
         _.each(Game.structures, (structure) => {
             if (structure.structureType == STRUCTURE_TOWER && structure.room == creep.room) {
                 var freeEnergy = structure.energyCapacity -
-                    Math.min(structure.energy + structure.calculateExpectedEnergy(), structure.energyCapacity);
+                    Math.min(structure.energy + structure.calculateExpectedEnergyDelta(), structure.energyCapacity);
                 if (freeEnergy > 0) {
                     var needsMuchEnergy = freeEnergy / structure.energyCapacity;
 
@@ -27,7 +27,7 @@ module.exports = {
                         baseImportance: importance,
                         preparationFunction: function() {
                             creep.memory.target = this.roomObject.id;
-                            this.roomObject.registerDelivery(creep);
+                            this.roomObject.registerEnergyTransaction(creep, creep.carry.energy);
                         }
                     }));
                 }
@@ -38,7 +38,7 @@ module.exports = {
     pursue: function(creep) {
         var target = Game.getObjectById(creep.memory.target);
         if (creep.carry.energy == 0 || target.energy == target.energyCapacity) {
-            target.deregisterDelivery(creep);
+            target.deregisterEnergyTransaction(creep);
             intentsUtil.reset(creep);
         }
         else if (moveAction.isActive(creep)) {

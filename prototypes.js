@@ -2,7 +2,7 @@ const PROTOTYPE_NAMES = [
     "creepBody",
     "creepDebug",
     "creepGroup",
-    "energyManagement",
+    "energyTransactions",
     "gameUserName",
     "memory",
     "roomOwnership"
