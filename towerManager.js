@@ -5,8 +5,12 @@ var flagDirectory = require("flagDirectory");
 var enemyDirectory = require("enemyDirectory");
 var Objects = require("util_objects");
 
+var data = {};
+
 module.exports = {
     manage: function() {
+        data.defenseRepairAmounts = {};
+
         _.each(
             Game.rooms, (room) => {
                 var enemy = enemyDirectory.getTarget(room);
@@ -75,24 +79,26 @@ module.exports = {
     repairDefenses: function(tower, defenses) {
         var result = false;
 
-        var defenseToRepair = null;
+        var job = null;
 
         var lowestHits = Number.MAX_VALUE;
         _.each(
             defenses, (defense) => {
-                if (defense.hits < lowestHits) {
+                var defenseHits = this.getEffectiveHits(defense);
+                if (defenseHits < lowestHits) {
                     var damageTaken = this.getDamageTaken(defense);
                     var repairAmount = this.calculateRepairAmount(tower, defense);
                     // We cannot choose how much to repair, so we wait until damage equals the repair amount.
                     if (damageTaken >= repairAmount) {
-                        defenseToRepair = defense;
-                        lowestHits = defense.hits;
+                        job = {defense: defense, amount: repairAmount};
+                        lowestHits = defenseHits;
                     }
                 }
             });
 
-        if (defenseToRepair) {
-            tower.repair(defenseToRepair);
+        if (job) {
+            tower.repair(job.defense);
+            this.addRepairAmount(job.defense, job.amount);
             result = true;
         }
 
@@ -111,9 +117,24 @@ module.exports = {
         return result;
     },
 
-    getDamageTaken: function(wall) {
-        wall.memory.strength = Math.max(wall.memory.strength | 0, wall.hits, MINIMUM_STRENGTH);
-        return wall.memory.strength - wall.hits;
+    getEffectiveHits: function(defense) {
+        var result = defense.hits;
+        var repairAmount = data.defenseRepairAmounts[defense.id];
+        if (repairAmount) {
+            result += repairAmount;
+        }
+        return result;
+    },
+
+    getDamageTaken: function(defense) {
+        var defenseHits = this.getEffectiveHits(defense);
+        defense.memory.strength = Math.max(defense.memory.strength | 0, defenseHits, MINIMUM_STRENGTH);
+        return defense.memory.strength - defenseHits;
+    },
+
+    addRepairAmount: function(defense, amount) {
+        var existingAmount = data.defenseRepairAmounts[defense.id] || 0;
+        data.defenseRepairAmounts[defense.id] = existingAmount + amount;
     },
 
     repairBuildings: function(tower) {
