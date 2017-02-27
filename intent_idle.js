@@ -2,7 +2,7 @@ const ACCEPTABLE_ADJACENT_OBSTACLES = 1;
 
 var intentsUtil = require("util_intents");
 var Possibility = require("possibility");
-var workerRace = require("race_worker");
+var creepStats = require("creepStats");
 
 module.exports = {
     name: "idle",
@@ -22,9 +22,7 @@ module.exports = {
         return result;
     },
     pursue: function(creep) {
-        if (creep.memory.race == "worker") {
-            workerRace.registerIdleCreep(creep);
-        }
+        creepStats.incrementCounter(creep, "idleTicks");
 
         this.sidestepIfNeeded(creep);
 

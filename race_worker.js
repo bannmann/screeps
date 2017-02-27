@@ -1,23 +1,21 @@
 const COST_PER_SIZE = 250;
 const PARTS_PER_SIZE = 4;
 const BASE_WORKER_COUNT = 2;
-const HISTORY_LENGTH = 10;
-const ACCEPTABLE_IDLE_CREEPS = 0;
+const MAX_IDLE_RATIO = 0.1;
 
 var logger = require("logger");
 var creepDirectory = require("creepDirectory");
-var flagDirectory = require("flagDirectory");
 var cpuUsage = require("cpuUsage");
+var creepStats = require("creepStats");
 
 module.exports = {
     getPlans: function(room) {
         var result = [];
 
-        if (this.areCreepsBusy(room) && cpuUsage.isLow()) {
-            if (creepDirectory.getRoomRaceCount(room.name, "worker") < BASE_WORKER_COUNT) {
-                result = 0.9;
-            } else {
-                result = 0.1;
+        if (this.areCreepsBusy(room) && this.areWorkersMature(room) && cpuUsage.isLow()) {
+            var importance = 0.1;
+            if (this.getWorkerCount(room) < BASE_WORKER_COUNT) {
+                importance = 0.9;
             }
             result.push({
                 importance: importance,
@@ -29,34 +27,17 @@ module.exports = {
     },
 
     areCreepsBusy: function(room) {
-        var result = !this.data.rooms[room.name].pastIdleCreepCounts.find(
-            (element) => {
-                return element > ACCEPTABLE_IDLE_CREEPS;
-            });
-        return result;
+        var idleTickRatio = creepStats.getRelativeTickCount(
+            room,
+            "idleTicks",
+            {filter: (creep) => creep.memory.race == "worker"});
+        return !idleTickRatio || idleTickRatio < MAX_IDLE_RATIO;
     },
 
-    moreCreepsPossible: function() {
-        var result;
-        if (this.simulationModeActive()) {
-            result = this.belowSimulationCreepCount();
-        }
-        else {
-            result = this.isCpuUsageLow();
-        }
-        return result;
-    },
-
-    simulationModeActive: function() {
-        return Game.cpu.getUsed() == 0;
-    },
-
-    belowSimulationCreepCount: function() {
-        return creepDirectory.getOverallCount() < 50;
-    },
-
-    getCost: function(room) {
-        return this.getAppropriateCreepSize(room) * COST_PER_SIZE;
+    areWorkersMature: function(room) {
+        var findOptions = {filter: (creep) => creep.memory.race == "worker"};
+        var ages = _.map(room.find(FIND_MY_CREEPS, findOptions), (creep) => creep.ticksLived);
+        return _.min(ages) >= 100;
     },
 
     getBody: function(room) {
@@ -76,12 +57,12 @@ module.exports = {
         return configuration;
     },
 
-    getAppropriateCreepSize(room) {
+    getAppropriateCreepSize: function(room) {
         var maximumSize = Math.floor(room.energyCapacityAvailable / COST_PER_SIZE);
         var result = Math.min(maximumSize, Math.floor(50 / PARTS_PER_SIZE));
 
         // If no or few workers are left, we should quickly spawn small ones that can help us gain energy.
-        var activeWorkers = creepDirectory.getRoomRaceCount(room.name, "worker");
+        var activeWorkers = this.getWorkerCount(room);
         if (activeWorkers < BASE_WORKER_COUNT) {
             result = Math.min(activeWorkers + 1, result);
         }
@@ -89,45 +70,7 @@ module.exports = {
         return result;
     },
 
-    onTickStarting: function() {
-        this.data = Memory.WorkerRace || {};
-
-        if (!this.data.rooms) {
-            this.data.rooms = {};
-        }
-
-        _.eachRight(this.data.rooms,
-            (roomData, roomName) =>{
-                if (!Game.rooms[roomName]) {
-                    delete this.data.rooms[roomName];
-                }
-            });
-
-        _.each(Game.rooms,
-            (room, roomName) =>{
-                if (!this.data.rooms[roomName]) {
-                    this.data.rooms[roomName] = {
-                        pastIdleCreepCounts: []
-                    };
-                }
-                this.data.rooms[roomName].currentIdleCreeps = 0;
-            });
-    },
-
-    registerIdleCreep: function(creep) {
-        this.data.rooms[creep.room.name].currentIdleCreeps++;
-    },
-
-    onTickEnding: function() {
-        _.each(this.data.rooms,
-            (roomData) =>{
-                roomData.pastIdleCreepCounts.push(roomData.currentIdleCreeps);
-
-                while (roomData.pastIdleCreepCounts.length > HISTORY_LENGTH) {
-                    roomData.pastIdleCreepCounts.shift();
-                }
-            });
-
-        Memory.WorkerRace = this.data;
+    getWorkerCount: function(room) {
+        return creepDirectory.getRoomRaceCount(room.name, "worker");
     }
 };

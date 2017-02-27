@@ -6,7 +6,6 @@
  * the game world will likely mess with other, non-listener modules and make debugging harder.
  */
 const LISTENER_MODULE_NAMES = [
-    "race_worker",
     "creepDirectory",
     "flagDirectory",
     "enemyDirectory",
