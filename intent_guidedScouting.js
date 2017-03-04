@@ -13,7 +13,7 @@ module.exports = {
 
         _.each(Game.flags,
             (flag)=> {
-                if (flag.name.startsWith("scout")) {
+                if (flag.name.startsWith("scout") && !flag.pos.isEqualTo(creep.pos)) {
                     result.push(new Possibility({
                         creep: creep,
                         intent: this,
