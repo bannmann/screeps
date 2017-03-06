@@ -1,4 +1,13 @@
 var _ = require("lodash");
+var Objects = require("util_objects");
+
+function saveTarget(creep, id) {
+    Objects.savePath(creep, ["memory", "intentStatus"], "energyTransactionTargetId", id);
+}
+
+function getTarget(creep) {
+    return Objects.loadPath(creep, ["memory", "intentStatus"], "energyTransactionTargetId");
+}
 
 module.exports.apply = function() {
     function apply(proto) {
@@ -16,17 +25,19 @@ module.exports.apply = function() {
         proto.registerEnergyTransaction = function(creep, delta) {
             this.initEnergyTransactionStore();
             this.memory.energyTransactions[creep.id] = delta;
+            saveTarget(creep, this.id);
         };
         proto.deregisterEnergyTransaction = function(creep) {
             this.initEnergyTransactionStore();
             delete this.memory.energyTransactions[creep.id];
+            saveTarget(creep, null);
         };
         proto.calculateExpectedEnergyDelta = function() {
             this.initEnergyTransactionStore();
             var totalDelta = 0;
             _.each(this.memory.energyTransactions, (delta, creepId) => {
                 var creep = Game.getObjectById(creepId);
-                if (creep) {
+                if (creep && getTarget(creep) == this.id) {
                     totalDelta += delta;
                 }
                 else {
