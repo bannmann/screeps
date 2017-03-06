@@ -12,12 +12,12 @@ module.exports = {
     listPossibilities: function(creep) {
         var result = [];
 
-        var controller = creep.room.controller;
-        if (this.isSigningEnabled() && controller && this.needsSigning(controller)) {
+        var room = creep.room;
+        if (this.isSigningEnabled() && (this.shouldApplySign(room) || this.shouldRemoveSign(room))) {
             result.push(new Possibility({
                 creep: creep,
                 intent: this,
-                roomObject: controller,
+                roomObject: room.controller,
                 shortDistanceFactor: 0,
                 baseImportance: 0.1
             }));
@@ -28,22 +28,26 @@ module.exports = {
     isSigningEnabled: function() {
         return typeof(Memory.ROOM_SIGNATURE) != "undefined";
     },
-    needsSigning: function(controller) {
-        return this.shouldApplySign(controller) || this.shouldRemoveSign(controller);
+    shouldApplySign: function(room) {
+        return room.my && this.getSign(room) != Memory.ROOM_SIGNATURE;
     },
-    shouldApplySign: function(controller) {
-        var sign = Objects.loadPath(controller, ["sign"], "text") || "";
-        return sign != Memory.ROOM_SIGNATURE;
+    getSign: function(room) {
+        return Objects.loadPath(room, ["controller", "sign"], "text") || "";
     },
-    shouldRemoveSign: function(controller) {
-        return Memory.ROOM_SIGNATURE == "" && controller.sign;
+    shouldRemoveSign: function(room) {
+        return room.controller && room.controller.sign && (room.neutral || room.my && Memory.ROOM_SIGNATURE == "");
     },
     pursue: function(creep) {
         if (moveAction.isActive(creep)) {
             moveAction.perform(creep, this);
         }
         else {
-            creep.signController(creep.room.controller, Memory.ROOM_SIGNATURE);
+            var room = creep.room;
+            var signature = Memory.ROOM_SIGNATURE;
+            if (room.neutral) {
+                signature = "";
+            }
+            creep.signController(room.controller, signature);
             intentsUtil.reset(creep);
         }
     }

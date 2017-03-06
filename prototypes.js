@@ -4,7 +4,8 @@ const PROTOTYPE_NAMES = [
     "creepGroup",
     "energyManagement",
     "gameUserName",
-    "memory"
+    "memory",
+    "roomOwnership"
 ];
 
 module.exports = [];
