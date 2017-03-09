@@ -69,7 +69,10 @@ module.exports = {
             moveAction.perform(creep);
         }
         else {
-            intentsUtil.finish(creep, this, creep.harvest(target));
+            var harvestResult = creep.harvest(target);
+            if (harvestResult != OK) {
+                intentsUtil.abort(creep, this, harvestResult);
+            }
         }
     }
 };
