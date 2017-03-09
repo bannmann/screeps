@@ -7,15 +7,17 @@ module.exports = {
     getPlans: function(room) {
         var result = [];
 
-        _.each(Game.flags,
-            (flag)=> {
-                if (flag.name.startsWith("claim") && flag.room == room && creepDirectory.getGlobalRaceCount("claimer") == 0) {
-                    result = [{
-                        importance: BASE_IMPORTANCE,
-                        body: [MOVE, CLAIM]
-                    }];
-                }
-            });
+        if (room.energyCapacityAvailable >= BODYPART_COST[MOVE] + BODYPART_COST[CLAIM]) {
+            _.each(Game.flags,
+                (flag)=> {
+                    if (flag.name.startsWith("claim") && flag.room == room && creepDirectory.getGlobalRaceCount("claimer") == 0) {
+                        result = [{
+                            importance: BASE_IMPORTANCE,
+                            body: [MOVE, CLAIM]
+                        }];
+                    }
+                });
+        }
 
         return result;
     }
