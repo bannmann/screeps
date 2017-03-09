@@ -35,6 +35,7 @@ module.exports = {
         }
         else {
             if (intentsUtil.finish(creep, this, creep.claimController(target))) {
+                Game.notify("Room " + creep.pos.roomName + " was claimed.");
                 _.each(Game.flags,
                     (flag)=> {
                         if (flag.name.startsWith("claim")) {
