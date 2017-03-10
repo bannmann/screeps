@@ -35,7 +35,7 @@ module.exports = {
 
         return result;
     }, isMovementNeeded: function(creep) {
-        return creep.pos.getRangeTo(armyManager.targetFlag) > MAX_DISTANCE_TO_FLAG;
+        return creep.pos.getRangeTo(armyManager.getTargetFlag()) > MAX_DISTANCE_TO_FLAG;
     },
     pursue: function(creep) {
         if (moveAction.isActive(creep)) {
