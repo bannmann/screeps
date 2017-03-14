@@ -33,9 +33,13 @@ module.exports = {
         return configuration;
     },
 
-    getAppropriateCreepSize(room) {
+    getAppropriateCreepSize: function(room) {
         var maximumSize = Math.floor(room.energyCapacityAvailable / COST_PER_SIZE);
         var result = Math.min(maximumSize, Math.floor(50 / PARTS_PER_SIZE));
         return result;
+    },
+
+    initializeCreep: function(creep) {
+        creep.notifyWhenAttacked(false);
     }
 };

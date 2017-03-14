@@ -1,11 +1,20 @@
 var intents = require("intents");
 var intentsUtil = require("util_intents");
+var races = require("races");
 
 module.exports.processIntents = function() {
     _.each(Game.creeps, (creep) => {
         creep.logDebug("inspected by intentManager " + JSON.stringify(creep.pos));
-
         if (!creep.spawning) {
+            if (creep.ticksLived == 0) {
+                var raceName = creep.memory.race;
+                if (raceName && raceName in races) {
+                    var race = races[raceName];
+                    if ('initializeCreep' in race) {
+                        race.initializeCreep(creep);
+                    }
+                }
+            }
             if (!creep.memory.intent) {
                 creep.logDebug("needs intent");
                 var possibilities = [];

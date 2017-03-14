@@ -42,5 +42,9 @@ module.exports = {
         var maximumSize = Math.floor(room.energyAvailable / COST_PER_SIZE);
         var result = Math.min(maximumSize, Math.floor(50 / PARTS_PER_SIZE));
         return result;
+    },
+
+    initializeCreep: function(creep) {
+        creep.notifyWhenAttacked(false);
     }
 };

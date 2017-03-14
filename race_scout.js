@@ -16,5 +16,9 @@ module.exports = {
             });
 
         return result;
+    },
+
+    initializeCreep: function(creep) {
+        creep.notifyWhenAttacked(false);
     }
 };
