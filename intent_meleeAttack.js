@@ -10,6 +10,8 @@ module.exports = {
     listPossibilities: function(creep) {
         var result = [];
 
+        // Healer 0.8+
+        // Worker 0.7+
         _.each(creep.room.find(FIND_HOSTILE_CREEPS),
             (enemy) => {
                 var wounded = (enemy.hitsMax - enemy.hits) / enemy.hitsMax;
@@ -18,7 +20,7 @@ module.exports = {
                     intent: this,
                     roomObject: enemy,
                     shortDistanceFactor: 0.025,
-                    baseImportance: 0.8 + enemy.canHeal * 0.1 + wounded * 0.05,
+                    baseImportance: 0.7 + enemy.canHeal * 0.1 + wounded * 0.05,
                     preparationFunction: function() {
                         creep.memory.target = this.roomObject.id;
                     }
@@ -30,6 +32,8 @@ module.exports = {
             filter: (structure) => structure.structureType != STRUCTURE_CONTROLLER
         });
 
+        // Tower 0.9+
+        // Spawn 0.79+
         _.each(hostileStructures,
             (structure) => {
                 var towerFactor = (structure.structureType == STRUCTURE_TOWER) * 1;
@@ -46,7 +50,7 @@ module.exports = {
                     intent: this,
                     roomObject: structure,
                     shortDistanceFactor: 0.025,
-                    baseImportance: 0.6 + towerFactor * 0.1 + spawnFactor * 0.09 + damaged * 0.05,
+                    baseImportance: 0.7 + towerFactor * 0.2 + spawnFactor * 0.09 + damaged * 0.05,
                     preparationFunction: function() {
                         creep.memory.target = this.roomObject.id;
                     }
