@@ -45,7 +45,10 @@ module.exports = {
             moveAction.perform(creep);
         }
         else {
-            intentsUtil.finish(creep, this, creep.build(target));
+            var buildResult = creep.build(target);
+            if (buildResult != OK) {
+                intentsUtil.abort(creep, this, buildResult);
+            }
         }
     }
 };
