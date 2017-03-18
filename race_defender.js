@@ -3,15 +3,16 @@ const PARTS_PER_SIZE = 4;
 const DEFENSE_FACTOR = 2;
 const COST_PER_SIZE = 190;
 var creepDirectory = require("creepDirectory");
+var enemyDirectory = require("enemyDirectory");
 
 module.exports = {
     getPlans: function(room) {
         var result = [];
 
-        var enemies = room.find(FIND_HOSTILE_CREEPS).length;
-        if (enemies > 0) {
+        var enemyCount = enemyDirectory.getEnemyCount(room);
+        if (enemyCount > 0) {
             var activeDefenders = creepDirectory.getRoomRaceCount(room.name, "defender");
-            if (activeDefenders < enemies * DEFENSE_FACTOR) {
+            if (activeDefenders < enemyCount * DEFENSE_FACTOR) {
                 result.push({
                     importance: BASE_IMPORTANCE,
                     body: this.getBody(room)

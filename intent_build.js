@@ -1,6 +1,7 @@
 var moveAction = require("action_move");
 var intentsUtil = require("util_intents");
 var Possibility = require("possibility");
+var enemyDirectory = require("enemyDirectory");
 
 module.exports = {
     name: "build",
@@ -15,7 +16,7 @@ module.exports = {
         var result = [];
         _.each(Game.constructionSites, (site) => {
             if (site.room == creep.room ||
-                (site.structureType == STRUCTURE_SPAWN && site.room.find(FIND_HOSTILE_CREEPS).length == 0)) {
+                (site.structureType == STRUCTURE_SPAWN && !enemyDirectory.enemiesPresent(creep.room))) {
                 var muchProgress = site.progress / site.progressTotal;
                 var baseImportance = 0.4 + muchProgress * 0.1;
 
