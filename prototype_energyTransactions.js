@@ -52,5 +52,6 @@ module.exports.apply = function() {
     apply(StructureSpawn.prototype);
     apply(StructureTower.prototype);
     apply(StructureContainer.prototype);
+    apply(Resource.prototype);
     apply(Creep.prototype);
 };

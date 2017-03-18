@@ -7,7 +7,7 @@ module.exports.clean = function() {
 
     if (Game.time % 100 == 0) {
         // See also prototype_memory
-        _.each(["extensions", "towers", "ramparts", "walls", "containers"], (blockName) => {
+        _.each(["extensions", "towers", "ramparts", "walls", "containers", "resources"], (blockName) => {
             var entries = Memory[blockName];
             _.eachRight(entries, (entry, id) => {
                 if (Game.getObjectById(id) == null) {

@@ -25,4 +25,5 @@ module.exports.apply = function() {
     apply(StructureRampart.prototype, "ramparts");
     apply(StructureWall.prototype, "walls");
     apply(StructureContainer.prototype, "containers");
+    apply(Resource.prototype, "resources");
 };
