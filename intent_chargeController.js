@@ -43,7 +43,10 @@ module.exports = {
             moveAction.perform(creep);
         }
         else {
-            intentsUtil.finish(creep, this, creep.upgradeController(target));
+            var upgradeResult = creep.upgradeController(target);
+            if (upgradeResult != OK) {
+                intentsUtil.abort(creep, this, upgradeResult);
+            }
         }
     }
 };
