@@ -4,6 +4,7 @@ const INTENT_NAMES = [
     "chargeSpawn",
     "chargeTower",
     "claimRoom",
+    "depleteContainer",
     "guidedScouting",
     "harvestEnergy",
     "idle",

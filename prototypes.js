@@ -1,5 +1,6 @@
 const PROTOTYPE_NAMES = [
     "creepBody",
+    "creepCarry",
     "creepDebug",
     "creepGroup",
     "creepLifeTime",
