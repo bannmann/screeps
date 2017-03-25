@@ -53,13 +53,13 @@ module.exports.processIntents = function() {
                 }
             }
 
-            creep.logDebug("detected " + creep.memory.intent);
             var intent = intents[creep.memory.intent];
             if (intent) {
                 creep.logDebug("pursue " + intent.name);
                 intent.pursue(creep);
             }
             else {
+                creep.logInfo("unknown intent " + creep.memory.intent + ", resetting");
                 intentsUtil.reset(creep);
             }
         }
