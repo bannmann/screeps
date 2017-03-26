@@ -2,16 +2,18 @@ var _ = require("lodash");
 
 module.exports.apply = function() {
     RoomPosition.prototype.hasObstacle = function() {
-        var result = false;
-        _.each(
-            this.look(), (look) => {
-                if (look.type == LOOK_CREEPS ||
-                    look.type == LOOK_STRUCTURES && look.structure.structureType != STRUCTURE_RAMPART ||
-                    look.type == LOOK_TERRAIN && look.terrain == "wall") {
-                    result = true;
-                    return false;
-                }
-            });
-        return result;
+        return this.hasTerrainWall() || this.hasNonRampartStructure() || this.hasCreep();
+    };
+
+    RoomPosition.prototype.hasTerrainWall = function() {
+        return _.some(this.lookFor(LOOK_TERRAIN), (terrainType) => terrainType == "wall");
+    };
+
+    RoomPosition.prototype.hasNonRampartStructure = function() {
+        return _.some(this.lookFor(LOOK_STRUCTURES), (structure) => structure.structureType != STRUCTURE_RAMPART);
+    };
+
+    RoomPosition.prototype.hasCreep = function() {
+        return this.lookFor(LOOK_CREEPS).length > 0;
     };
 };
