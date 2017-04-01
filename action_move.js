@@ -44,7 +44,8 @@ module.exports = {
         Memory["CreepMovementPauses"] = this.pauseListsByTarget;
     },
 
-    start: function(creep, path, intentRange, targetRoomPosition) {
+    start: function(creep, intentRange, targetRoomPosition) {
+        var path = creep.pos.findPathTo(targetRoomPosition, {ignoreCreeps: true});
         if (this.isMovementNeeded(creep, path, intentRange, targetRoomPosition)) {
             creep.memory.movementStatus = {
                 pauseDuration: 0,

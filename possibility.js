@@ -1,26 +1,25 @@
-var intentsUtil = require("util_intents");
 var moveAction = require("action_move");
 
 module.exports = function(parameters) {
     var creep = parameters.creep;
     var intent = parameters.intent;
     var roomObject = parameters.roomObject;
-    var shortDistanceFactor = parameters.shortDistanceFactor;
+    var shortDistanceFactor = parameters.shortDistanceFactor || 0;
     var baseImportance = parameters.baseImportance;
     var preparationFunction = parameters.preparationFunction;
     var intentStatus = parameters.intentStatus || {};
 
     this.debug = { intentName: intent.name, intentStatus: intentStatus };
 
-    var path;
+    this.importance = baseImportance;
     if (roomObject) {
         this.debug.targetPos = roomObject.pos;
 
-        path = creep.pos.findPathTo(roomObject, {ignoreCreeps: true});
-        var shortDistance = intentsUtil.getShortDistanceFactor(path, intent.range);
-        this.importance = baseImportance + shortDistance * shortDistanceFactor;
-    } else {
-        this.importance = baseImportance;
+        if (shortDistanceFactor) {
+            var distance = creep.pos.getRangeTo(roomObject);
+            var shortDistance = 1 / Math.max(1, distance - intent.range);
+            this.importance += shortDistance * shortDistanceFactor;
+        }
     }
 
     this.choose = function() {
@@ -33,7 +32,7 @@ module.exports = function(parameters) {
         creep.memory.intent = intent.name;
 
         if (roomObject) {
-            moveAction.start(creep, path, intent.range, roomObject.pos);
+            moveAction.start(creep, intent.range, roomObject.pos);
         }
     }
 }
