@@ -29,10 +29,12 @@ module.exports = function(parameters) {
     }
 
     function activateIntent(intent) {
-        creep.memory.intent = intent.name;
-
+        var canActivate = true;
         if (roomObject) {
-            moveAction.start(creep, intent.range, roomObject.pos);
+            canActivate = moveAction.start(creep, intent.range, roomObject.pos);
+        }
+        if (canActivate) {
+            creep.memory.intent = intent.name;
         }
     }
 }

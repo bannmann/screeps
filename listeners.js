@@ -9,8 +9,10 @@ const LISTENER_MODULE_NAMES = [
     "creepDirectory",
     "flagDirectory",
     "enemyDirectory",
+    "roomDirectory",
     "action_move",
-    "cpuUsage"
+    "cpuUsage",
+    "util_paths"
 ];
 
 const LISTENER_MODULES = _.map(LISTENER_MODULE_NAMES, require);

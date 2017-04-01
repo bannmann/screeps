@@ -3,6 +3,8 @@ const ACCEPTABLE_DETOUR_FACTOR = 2;
 const ACCEPTABLE_PAUSES_PER_TARGET = 1;
 const MAX_PAUSE_LIST_LENGTH = 10;
 
+var pathsUtil = require("util_paths");
+
 module.exports = {
     onTickStarting: function() {
         this.pauseListsByTarget = Memory["CreepMovementPauses"] || {};
@@ -45,24 +47,36 @@ module.exports = {
     },
 
     start: function(creep, intentRange, targetRoomPosition) {
-        var path = creep.pos.findPathTo(targetRoomPosition, {ignoreCreeps: true});
-        if (this.isMovementNeeded(creep, path, intentRange, targetRoomPosition)) {
-            creep.memory.movementStatus = {
-                pauseDuration: 0,
-                lastPosition: null,
-                lastRoom: creep.pos.roomName,
-                path: Room.serializePath(path),
-                intentRange: intentRange,
-                target: targetRoomPosition
-            };
-            creep.logDebug("starting movement to " + JSON.stringify(targetRoomPosition) + " with intentRange " + intentRange);
+        var result = false;
+        if (this.isMovementNeeded(creep, intentRange, targetRoomPosition)) {
+            var roomPaths = pathsUtil.findPath(creep.pos, targetRoomPosition, intentRange);
+            if (!roomPaths) {
+                creep.logInfo(
+                    "path finding from " + JSON.stringify(creep.pos) + " to " + JSON.stringify(targetRoomPosition) +
+                    " failed");
+            }
+            else {
+                creep.memory.movementStatus = {
+                    pauseDuration: 0,
+                    lastPosition: null,
+                    lastRoom: creep.pos.roomName,
+                    roomPaths: roomPaths,
+                    intentRange: intentRange,
+                    target: targetRoomPosition
+                };
+                creep.logDebug(
+                    "starting movement to " + JSON.stringify(targetRoomPosition) + " with intentRange " + intentRange);
+                result = true;
+            }
         } else {
             creep.logDebug("no movement needed to " + JSON.stringify(targetRoomPosition));
+            result = true;
         }
+        return result;
     },
 
-    isMovementNeeded(creep, path, intentRange, targetRoomPosition) {
-        return targetRoomPosition.roomName != creep.pos.roomName || path.length > 1 || path.length == 1 && !creep.pos.inRangeTo(path[0].x, path[0].y, intentRange);
+    isMovementNeeded(creep, intentRange, targetRoomPosition) {
+        return targetRoomPosition.roomName != creep.pos.roomName || !creep.pos.inRangeTo(targetRoomPosition, intentRange);
     },
 
     isActive: function(creep) {
@@ -78,8 +92,13 @@ module.exports = {
             // The creep just switched rooms and is now located on the new room's exit. Leave it to avoid oscillating.
             creep.logDebug("entering " + creep.pos.roomName + " to " + creep.memory.intent);
 
-            var targetPosition = this.getTargetPosition(status);
-            status.path = Room.serializePath(creep.pos.findPathTo(targetPosition, {ignoreCreeps: true}));
+            delete status.detourPath;
+
+            // TODO remove legacy status handling
+            if (!status.roomPaths) {
+                var targetPosition = this.getTargetPosition(status);
+                status.path = Room.serializePath(creep.pos.findPathTo(targetPosition, {ignoreCreeps: true}));
+            }
         }
 
         if (this.isTargetInRange(creep, status)) {
@@ -88,8 +107,14 @@ module.exports = {
         }
         else {
             this.checkAndAdaptMovement(creep, status);
-            creep.moveByPath(status.path);
             creep.logDebug("moving");
+            // TODO remove legacy status handling
+            if (status.roomPaths) {
+                var roomPath = this.getCurrentRoomPath(creep, status);
+                creep.moveByPath(roomPath);
+            } else {
+                creep.moveByPath(status.path);
+            }
         }
     },
 
@@ -99,7 +124,8 @@ module.exports = {
 
     isTargetInRange: function(creep, status) {
         var targetPosition = this.getTargetPosition(status);
-        return creep.pos.getRangeTo(targetPosition) <= status.intentRange;
+        var range = creep.pos.getRangeTo(targetPosition);
+        return range <= status.intentRange;
     },
 
     getTargetPosition: function(status) {
@@ -118,6 +144,7 @@ module.exports = {
             status.pauseDuration++;
             if (status.pauseDuration > ACCEPTABLE_PAUSE) {
                 this.takeDetour(creep, status);
+                status.pauseDuration = 0;
             }
         }
         else if (status.pauseDuration > 0) {
@@ -127,8 +154,16 @@ module.exports = {
         status.lastRoom = creep.pos.roomName;
     },
 
-    makePositionString: function(positionObject) {
-        return positionObject.roomName + "-" + positionObject.x + "-" + positionObject.y;
+    getCurrentRoomPath: function(creep, status) {
+        var result = status.roomPaths[creep.pos.roomName];
+        if (status.detourPath) {
+            result = status.detourPath;
+        }
+        return result;
+    },
+
+    makePositionString: function(roomPosition) {
+        return roomPosition.roomName + "-" + roomPosition.x + "-" + roomPosition.y;
     },
 
     publishPause: function(status) {
@@ -143,17 +178,36 @@ module.exports = {
     },
 
     takeDetour: function(creep, status) {
-        var targetPosition = this.getTargetPosition(status);
-
-        var creepCausedDetour = creep.pos.findPathTo(targetPosition, {ignoreCreeps: false});
+        var roomTarget = this.getCurrentRoomTarget(creep, status);
+        var creepCausedDetour = creep.pos.findPathTo(roomTarget, {ignoreCreeps: false});
         if (creepCausedDetour.length == 0) {
-            // blocked by other creep
+            // all paths are blocked by other creeps, this creep has no choice but to wait
+            creep.logDebug("all paths blocked by other creeps");
         }
         else {
-            var optimalPath = creep.pos.findPathTo(targetPosition, {ignoreCreeps: true});
+            var optimalPath = creep.pos.findPathTo(roomTarget, {ignoreCreeps: true});
             if (creepCausedDetour.length <= optimalPath.length * ACCEPTABLE_DETOUR_FACTOR) {
-                status.path = Room.serializePath(creepCausedDetour);
+                creep.logDebug("taking detour: " + JSON.stringify(creepCausedDetour));
+                status.detourPath = Room.serializePath(creepCausedDetour);
+            } else {
+                creep.logDebug("detour of " + creepCausedDetour.length + "is too long");
             }
         }
+    },
+
+    getCurrentRoomTarget: function(creep, status) {
+        var result;
+
+        var finalTarget = this.getTargetPosition(status);
+        if (finalTarget.roomName == creep.pos.roomName) {
+            result = finalTarget;
+        } else {
+            // Target is the end position of the path within this room so it aligns with the path in the next room
+            var roomPath = Room.deserializePath(this.getCurrentRoomPath(creep, status));
+            var lastStep = _.last(roomPath);
+            result = new RoomPosition(lastStep.x, lastStep.y, creep.pos.roomName);
+        }
+
+        return result;
     }
 };

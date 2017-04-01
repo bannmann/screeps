@@ -18,4 +18,31 @@ module.exports.apply = function() {
                 }
             });
     }
+
+    if (!Room.hasOwnProperty("otherPlayer")) {
+        Object.defineProperty(
+            Room.prototype, "otherPlayer", {
+                get: function() {
+                    return !this.my && !this.neutral;
+                }
+            });
+    }
+
+    if (!Room.hasOwnProperty("username")) {
+        Object.defineProperty(
+            Room.prototype, "username", {
+                get: function() {
+                    var result = null;
+                    if (this.controller) {
+                        if (this.controller.owner) {
+                            result = this.controller.owner.username;
+                        }
+                        else if (this.reservation) {
+                            result = this.reservation.username;
+                        }
+                    }
+                    return result;
+                }
+            });
+    }
 };

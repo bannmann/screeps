@@ -11,7 +11,7 @@ module.exports = {
     },
 
     isEnemyPlayer: function(username) {
-        return !this.isAlliedPlayer(username);
+        return !!username && !this.isAlliedPlayer(username);
     },
 
     isAlliedPlayer: function(username) {
