@@ -73,7 +73,7 @@ module.exports = {
     perform: function(creep) {
         var status = this.getStatus(creep);
 
-        if (!this.isLegacyStatus(status) && status.lastRoom != creep.pos.roomName) {
+        if (status.lastRoom != creep.pos.roomName) {
             // The creep just switched rooms and is now located on the new room's exit. Leave it to avoid oscillating.
             creep.logDebug("entering " + creep.pos.roomName + " to " + creep.memory.intent);
 
@@ -81,7 +81,7 @@ module.exports = {
             status.path = Room.serializePath(creep.pos.findPathTo(targetPosition, {ignoreCreeps: true}));
         }
 
-        if (this.isLegacyStatus(status) || this.isTargetInRange(creep, status)) {
+        if (this.isTargetInRange(creep, status)) {
             creep.logDebug("stopping");
             this.stop(creep);
         }
@@ -94,10 +94,6 @@ module.exports = {
 
     getStatus: function(creep) {
         return creep.memory.movementStatus;
-    },
-
-    isLegacyStatus: function(status) {
-        return !status.target || status.target.roomName === undefined;
     },
 
     isTargetInRange: function(creep, status) {
