@@ -1,4 +1,5 @@
 const MAX_DISTANCE_TO_FLAG = 3;
+const GATHERING = "GATHERING"
 
 var moveAction = require("action_move");
 var intentsUtil = require("util_intents");
@@ -13,35 +14,53 @@ module.exports = {
     }, listPossibilities: function(creep) {
         var result = [];
 
-        var alreadyDeployed = armyManager.isDeployed(creep);
+        var isDeployed = armyManager.isDeployed(creep);
+        var isReady = armyManager.isReady(creep);
 
-        var newCreepShouldDeploy = !alreadyDeployed && armyManager.shouldDeployCreeps();
-        var deployedCreepShouldReturn = alreadyDeployed && this.isMovementNeeded(creep);
-
-        if (newCreepShouldDeploy || deployedCreepShouldReturn) {
+        if (!isReady && !isDeployed) {
             result.push(new Possibility({
                 creep: creep,
                 intent: this,
-                roomObject: armyManager.getTargetFlag(),
+                roomObject: armyManager.getGatheringFlag(),
                 shortDistanceFactor: 0.1,
                 baseImportance: 0.5,
-                preparationFunction: function() {
-                    if (!alreadyDeployed) {
-                        armyManager.markDeployed(creep);
-                    }
-                }
+                intentStatus: GATHERING
             }));
+        } else {
+            var newCreepShouldDeploy = isReady && armyManager.shouldDeployCreeps();
+            var deployedCreepShouldReturn = isDeployed && this.isTooFarFromFlag(creep);
+
+            if (newCreepShouldDeploy || deployedCreepShouldReturn) {
+                result.push(new Possibility({
+                    creep: creep,
+                    intent: this,
+                    roomObject: armyManager.getTargetFlag(),
+                    shortDistanceFactor: 0.1,
+                    baseImportance: 0.5,
+                    preparationFunction: function() {
+                        if (!isDeployed) {
+                            armyManager.markDeployed(creep);
+                        }
+                    }
+                }));
+            }
         }
 
         return result;
-    }, isMovementNeeded: function(creep) {
+    },
+
+    isTooFarFromFlag: function(creep) {
         return creep.pos.getRangeTo(armyManager.getTargetFlag()) > MAX_DISTANCE_TO_FLAG;
     },
+
     pursue: function(creep) {
         if (moveAction.isActive(creep)) {
             moveAction.perform(creep);
         }
         else {
+            if (creep.memory.intentStatus == GATHERING) {
+                armyManager.markReady(creep);
+            }
             intentsUtil.reset(creep);
         }
     }
