@@ -1,6 +1,7 @@
 const RACE_NAMES = [
     "attacker",
     "claimer",
+    "dismantler",
     "defender",
     "scout",
     "worker"

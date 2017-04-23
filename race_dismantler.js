@@ -1,16 +1,19 @@
-const BASE_IMPORTANCE = 0.6;
-const COST_PER_SIZE = 190;
-const PARTS_PER_SIZE = 4;
+const BASE_IMPORTANCE = 0.55;
+const COST_PER_SIZE = 150;
+const PARTS_PER_SIZE = 2;
 var armyManager = require("armyManager");
 
 module.exports = {
     getPlans: function(room) {
         var result = [];
 
-        if (armyManager.isRecruiting("attacker")) {
+        if (armyManager.isRecruiting("dismantler")) {
             result.push({
                 importance: BASE_IMPORTANCE,
-                body: this.getBody(room)
+                body: this.getBody(room),
+                onStartSpawning: (creep) => {
+                    creep.notifyWhenAttacked(false);
+                }
             });
         }
 
@@ -21,14 +24,10 @@ module.exports = {
         var creepSize = this.getAppropriateCreepSize(room);
         var configuration = [];
         for (var i = 0; i < creepSize; i++) {
-            configuration.push(TOUGH);
-        }
-        for (var i = 0; i < creepSize; i++) {
-            configuration.push(MOVE);
             configuration.push(MOVE);
         }
         for (var i = 0; i < creepSize; i++) {
-            configuration.push(ATTACK);
+            configuration.push(WORK);
         }
         return configuration;
     },
@@ -37,9 +36,5 @@ module.exports = {
         var maximumSize = Math.floor(room.energyCapacityAvailable / COST_PER_SIZE);
         var result = Math.min(maximumSize, Math.floor(50 / PARTS_PER_SIZE));
         return result;
-    },
-
-    initializeCreep: function(creep) {
-        creep.notifyWhenAttacked(false);
     }
 };

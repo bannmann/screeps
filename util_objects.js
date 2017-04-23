@@ -41,5 +41,13 @@ module.exports = {
                 }
             }
         });
+    },
+
+    increaseCounter: function(object, key) {
+        if (!object[key]) {
+            object[key] = 0;
+        }
+        object[key]++;
     }
+
 };

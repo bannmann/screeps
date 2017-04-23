@@ -6,6 +6,7 @@ const INTENT_NAMES = [
     "claimRoom",
     "depleteContainer",
     "depleteStorage",
+    "dismantle",
     "guidedScouting",
     "harvestEnergy",
     "idle",

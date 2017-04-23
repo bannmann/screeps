@@ -131,6 +131,12 @@ module.exports = {
      */
     putExitCosts: function(costMatrix, roomName) {
         var exits = Game.map.describeExits(roomName);
+        if (roomName == "sim") {
+            // In simulation mode, describeExits() returns null. Make sure the loop below works despite this.
+            exits = {};
+            exits[LEFT] = "nowhere";
+            exits[RIGHT] = "nowhere";
+        }
 
         for (var i = 1; i < 49; i++) {
             if (LEFT in exits) increaseCostIfExit(0, i);

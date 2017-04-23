@@ -10,7 +10,7 @@ module.exports = {
     name: "offensive",
     range: MAX_DISTANCE_TO_FLAG,
     canBePerformedBy: function(creep) {
-        return creep.memory.race == "attacker" && creep.hasActiveBodyparts(MOVE);
+        return armyManager.isManaged(creep) && creep.hasActiveBodyparts(MOVE);
     }, listPossibilities: function(creep) {
         var result = [];
 

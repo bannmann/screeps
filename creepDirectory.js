@@ -1,13 +1,7 @@
 var logger = require("logger");
+var Objects = require("util_objects");
 
 var data = {};
-
-function increaseCounter(object, key) {
-    if (!object[key]) {
-        object[key] = 0;
-    }
-    object[key]++;
-}
 
 module.exports = {
     onTickStarting: function() {
@@ -31,8 +25,8 @@ module.exports = {
 
         var roomData = data.rooms[roomName];
 
-        increaseCounter(roomData, raceName);
-        increaseCounter(data.global, raceName);
+        Objects.increaseCounter(roomData, raceName);
+        Objects.increaseCounter(data.global, raceName);
         data.total++;
     },
 
