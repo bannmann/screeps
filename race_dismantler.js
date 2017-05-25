@@ -7,7 +7,7 @@ module.exports = {
     getPlans: function(room) {
         var result = [];
 
-        if (armyManager.isRecruiting("dismantler")) {
+        if (armyManager.isRecruiting(room, "dismantler")) {
             result.push({
                 importance: BASE_IMPORTANCE,
                 body: this.getBody(room),

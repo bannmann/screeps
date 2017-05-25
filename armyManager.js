@@ -1,5 +1,6 @@
 const DEPLOYED = "DEPLOYED";
 const READY = "READY";
+const ROOM_RANGE = 6;
 
 var logger = require("logger");
 var creepDirectory = require("creepDirectory");
@@ -70,10 +71,22 @@ module.exports = {
         creep.memory.offensiveStatus = READY;
     },
 
-    isRecruiting: function(raceName) {
+    isRecruiting: function(room, raceName) {
+        return this.needsRace(raceName) && this.isInRecruitingRange(room);
+    },
+
+    needsRace: function(raceName) {
         var raceCount = creepDirectory.getGlobalRaceCount(raceName);
         var isNeeded = (!raceCount || raceCount < data.required[raceName]);
         return isNeeded;
+    },
+
+    isInRecruitingRange: function(room) {
+        var flag = this.getGatheringFlag();
+        if (!flag) {
+            flag = this.getTargetFlag();
+        }
+        return Game.map.getRoomLinearDistance(room.name, flag.pos.roomName) <= ROOM_RANGE;
     },
 
     shouldDeployCreeps: function() {
