@@ -10,7 +10,8 @@ const PROTOTYPE_NAMES = [
     "roomOwnership",
     "roomPositionDirection",
     "roomPositionObstacle",
-    "roomPositionRampart"
+    "roomPositionRampart",
+    "roomPositionRange"
 ];
 
 module.exports = [];

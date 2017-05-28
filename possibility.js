@@ -16,7 +16,7 @@ module.exports = function(parameters) {
         this.debug.targetPos = roomObject.pos;
 
         if (shortDistanceFactor) {
-            var distance = creep.pos.getRangeTo(roomObject);
+            var distance = creep.pos.getApproximateRangeTo(roomObject);
             var shortDistance = 1 / Math.max(1, distance - intent.range);
             this.importance += shortDistance * shortDistanceFactor;
         }
