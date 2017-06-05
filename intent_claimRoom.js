@@ -10,18 +10,28 @@ module.exports = {
     },
     listPossibilities: function(creep) {
         var result = [];
-        var thisIntent = this;
 
-        var controller = creep.room.controller;
-        if (controller && !controller.owner) {
+        var chosenDistance = Number.MAX_VALUE;
+        var chosenFlag = null;
+        _.each(Game.flags,
+            (flag)=> {
+                if (flag.name.startsWith("claim")) {
+                    var distance = creep.pos.getApproximateRangeTo(flag.pos);
+                    if (distance < chosenDistance) {
+                        chosenDistance = distance;
+                        chosenFlag = flag;
+                    }
+                }
+            });
+
+        if (chosenFlag) {
             result.push(new Possibility({
                 creep: creep,
                 intent: this,
-                roomObject: controller,
-                shortDistanceFactor: 0,
+                roomObject: chosenFlag,
                 baseImportance: 0.5,
-                preparationFunction: function() {
-                    creep.memory.target = this.roomObject.id;
+                intentStatus: {
+                    flagName: chosenFlag.name
                 }
             }));
         }
@@ -29,20 +39,35 @@ module.exports = {
         return result;
     },
     pursue: function(creep) {
-        var target = Game.getObjectById(creep.memory.target);
         if (moveAction.isActive(creep)) {
             moveAction.perform(creep, this);
         }
-        else {
-            if (intentsUtil.finish(creep, this, creep.claimController(target))) {
-                Game.notify("Room " + creep.pos.roomName + " was claimed.");
-                _.each(Game.flags,
-                    (flag)=> {
-                        if (flag.name.startsWith("claim")) {
-                            flag.remove();
-                        }
-                    });
+        else if (creep.room.claimable) {
+            var target = creep.room.controller;
+            if (creep.pos.inRangeTo(target.pos, 1)) {
+                if (this.gclAllowsClaiming()) {
+                    this.claimRoom(creep);
+                } else {
+                    Game.notify("Waiting for free GCL in order to claim room " + creep.pos.roomName);
+                }
+            } else {
+                moveAction.start(creep, 1, target.pos);
             }
+        } else {
+            creep.logInfo("non-claimable room encountered, resetting");
+            intentsUtil.reset(creep);
         }
+    },
+    gclAllowsClaiming: function() {
+        var claimedRooms = _.filter(Game.rooms, (room) => room.claimed).length;
+        return Game.gcl.level > claimedRooms;
+    },
+    claimRoom: function(creep) {
+        var claimResult = creep.claimController(creep.room.controller);
+        if (claimResult == OK) {
+            Game.notify("Room " + creep.pos.roomName + " was claimed.");
+            Game.flags[creep.memory.intentStatus.flagName].remove();
+        }
+        intentsUtil.finish(creep, this, claimResult);
     }
 };

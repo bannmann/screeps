@@ -19,6 +19,26 @@ module.exports.apply = function() {
             });
     }
 
+    if (!Room.hasOwnProperty("claimable")) {
+        Object.defineProperty(
+            Room.prototype, "claimable", {
+                get: function() {
+                    var controller = this.controller;
+                    return !!controller && !controller.owner &&
+                        (!controller.reservation || controller.reservation.username == Game.username);
+                }
+            });
+    }
+
+    if (!Room.hasOwnProperty("claimed")) {
+        Object.defineProperty(
+            Room.prototype, "claimed", {
+                get: function() {
+                    return !!this.controller && this.controller.my;
+                }
+            });
+    }
+
     if (!Room.hasOwnProperty("otherPlayer")) {
         Object.defineProperty(
             Room.prototype, "otherPlayer", {

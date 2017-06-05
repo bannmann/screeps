@@ -11,7 +11,6 @@ const INTENT_NAMES = [
     "harvestEnergy",
     "idle",
     "meleeAttack",
-    "moveToClaimableRoom",
     "offensive",
     "pickupEnergy",
     "pioneer",

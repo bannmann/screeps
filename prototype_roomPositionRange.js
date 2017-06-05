@@ -23,4 +23,19 @@ module.exports.apply = function() {
         }
         return result;
     };
+
+    RoomPosition.prototype.getNearestSpawnRoom = function() {
+        var spawnRooms = _.filter(Game.rooms, (room) => room.my && room.find(FIND_MY_SPAWNS).length > 0);
+
+        var result = { distance: Number.MAX_VALUE, room: null, roomName: null };
+        _.each(spawnRooms, (spawnRoom) => {
+            var distance = Game.map.getRoomLinearDistance(spawnRoom.name, this.roomName);
+            if (distance < result.distance) {
+                result.distance = distance;
+                result.roomName = spawnRoom.name;
+                result.room = spawnRoom;
+            }
+        });
+        return result;
+    }
 };

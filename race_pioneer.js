@@ -12,7 +12,7 @@ module.exports = {
 
         _.each(this.getBootstrappingRooms(), (bootstrappingRoom) => {
             // Only send pioneers from the nearest room
-            if (this.getResponsibleRoomName(bootstrappingRoom) == room.name) {
+            if (this.getNearestSpawnRoomName(bootstrappingRoom) == room.name) {
                 var workersPresent = creepDirectory.getRoomRaceCount(bootstrappingRoom.name, "worker");
 
                 // This won't work correctly for multiple concurrently bootstrapping rooms, but it suffices for now.
@@ -37,21 +37,8 @@ module.exports = {
         return _.filter(Game.rooms, (room) => room.my && room.find(FIND_MY_SPAWNS).length == 0);
     },
 
-    getResponsibleRoomName: function(bootstrappingRoom) {
-        var result = null;
-        var resultDistance = Number.MAX_VALUE;
-        _.each(this.getActiveRooms(), (activeRoom) => {
-            var distance = Game.map.getRoomLinearDistance(activeRoom.name, bootstrappingRoom.name);
-            if (distance < resultDistance) {
-                resultDistance = distance;
-                result = activeRoom.name;
-            }
-        });
-        return result;
-    },
-
-    getActiveRooms: function() {
-        return _.filter(Game.rooms, (room) => room.my && room.find(FIND_MY_SPAWNS).length > 0);
+    getNearestSpawnRoomName: function(bootstrappingRoom) {
+        return bootstrappingRoom.controller.pos.getNearestSpawnRoom().roomName;
     },
 
     getBody: function(room) {
