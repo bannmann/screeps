@@ -15,8 +15,7 @@ module.exports = {
     listPossibilities: function(creep) {
         var result = [];
         _.each(Game.constructionSites, (site) => {
-            if (site.room == creep.room ||
-                (site.structureType == STRUCTURE_SPAWN && !enemyDirectory.enemiesPresent(creep.room))) {
+            if (site.room == creep.room) {
                 var muchProgress = site.progress / site.progressTotal;
                 var baseImportance = 0.4 + muchProgress * 0.1;
 

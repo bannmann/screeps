@@ -14,6 +14,7 @@ const INTENT_NAMES = [
     "moveToClaimableRoom",
     "offensive",
     "pickupEnergy",
+    "pioneer",
     "rangedAttack",
     "signController"
 ];

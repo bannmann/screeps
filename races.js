@@ -3,6 +3,7 @@ const RACE_NAMES = [
     "claimer",
     "dismantler",
     "defender",
+    "pioneer",
     "scout",
     "worker"
 ];
