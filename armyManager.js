@@ -72,7 +72,7 @@ module.exports = {
     },
 
     isRecruiting: function(room, raceName) {
-        return this.needsRace(raceName) && this.isInRecruitingRange(room);
+        return !!data.targetFlag && this.needsRace(raceName) && this.isInRecruitingRange(room);
     },
 
     needsRace: function(raceName) {
