@@ -11,15 +11,12 @@ module.exports = {
     listPossibilities: function(creep) {
         var result = [];
 
-        var room = Game.rooms[creep.memory.pioneeringRoomName];
-        if (room && room.my) {
-            result.push(new Possibility({
-                creep: creep,
-                intent: this,
-                roomObject: room.controller,
-                baseImportance: 0.9
-            }));
-        }
+        result.push(new Possibility({
+            creep: creep,
+            intent: this,
+            roomName: creep.memory.pioneeringRoomName,
+            baseImportance: 0.9
+        }));
 
         return result;
     },

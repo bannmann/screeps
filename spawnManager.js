@@ -6,7 +6,7 @@ module.exports = {
     spawnCreepIfNecessary: function() {
         _.each(Game.spawns,
             (spawn) => {
-                if (!spawn.spawning) {
+                if (spawn.isActive() && !spawn.spawning) {
                     var room = spawn.room;
 
                     var chosenPlan = null;

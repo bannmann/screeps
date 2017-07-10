@@ -7,10 +7,11 @@ module.exports = {
     name: "build",
     range: 3,
     canBePerformedBy: function(creep) {
-        return creep.hasActiveBodyparts(MOVE, WORK, CARRY) &&
-            // avoid sucking up all creeps for building, always leave some for 'chargeSpawn' intent
-            creep.belongsToGroup(0, 2) &&
-            creep.carry.energy > 0;
+        return creep.hasActiveBodyparts(MOVE, WORK, CARRY) && this.isPermitted(creep) && creep.carry.energy > 0;
+    },
+    isPermitted: function(creep) {
+        // If there is a spawn, don't suck up all creeps for building - always leave some for 'chargeSpawn' intent
+        return creep.room.energyCapacityAvailable == 0 || creep.belongsToGroup(0, 2);
     },
     listPossibilities: function(creep) {
         var result = [];

@@ -10,10 +10,10 @@ module.exports = {
     getPlans: function(room) {
         var result = [];
 
-        _.each(this.getBootstrappingRooms(), (bootstrappingRoom) => {
+        _.each(this.getPioneerTargetRoomNames(), (roomName) => {
             // Only send pioneers from the nearest room
-            if (this.getNearestSpawnRoomName(bootstrappingRoom) == room.name) {
-                var workersPresent = creepDirectory.getRoomRaceCount(bootstrappingRoom.name, "worker");
+            if (this.getNearestSpawnRoomName(roomName) == room.name) {
+                var workersPresent = creepDirectory.getRoomRaceCount(roomName, "worker");
 
                 // This won't work correctly for multiple concurrently bootstrapping rooms, but it suffices for now.
                 var pioneersUnderway = creepDirectory.getGlobalRaceCount("pioneer");
@@ -23,7 +23,7 @@ module.exports = {
                         importance: 0.8,
                         body: this.getBody(room),
                         memory: {
-                            pioneeringRoomName: bootstrappingRoom.name
+                            pioneeringRoomName: roomName
                         }
                     });
                 }
@@ -33,12 +33,24 @@ module.exports = {
         return result;
     },
 
-    getBootstrappingRooms: function() {
-        return _.filter(Game.rooms, (room) => room.my && room.find(FIND_MY_SPAWNS).length == 0);
+    getPioneerTargetRoomNames: function() {
+        var result = [];
+        _.each(Game.rooms, (room) => {
+            if (room.my && room.find(FIND_MY_SPAWNS).length == 0) {
+                result.push(room.name);
+            }
+        });
+        _.each(Game.flags, (flag) => {
+            if (flag.name.startsWith("pioneer")) {
+                result.push(flag.pos.roomName);
+            }
+        });
+        return result;
     },
 
-    getNearestSpawnRoomName: function(bootstrappingRoom) {
-        return bootstrappingRoom.controller.pos.getNearestSpawnRoom().roomName;
+    getNearestSpawnRoomName: function(roomName) {
+        var position = new RoomPosition(25, 25, roomName);
+        return position.getNearestSpawnRoom().roomName;
     },
 
     getBody: function(room) {

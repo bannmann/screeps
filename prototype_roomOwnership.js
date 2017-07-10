@@ -65,4 +65,11 @@ module.exports.apply = function() {
                 }
             });
     }
+
+    Room.prototype.abandon = function() {
+        _.each(this.find(FIND_STRUCTURES), (structure) => { structure.destroy() } );
+        _.each(this.find(FIND_MY_CREEPS), (creep) => { creep.suicide() } );
+        _.each(this.find(FIND_CONSTRUCTION_SITES), (site) => { site.remove() } );
+        this.controller.unclaim();
+    };
 };
