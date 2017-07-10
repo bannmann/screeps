@@ -1,5 +1,5 @@
 module.exports.apply = function() {
-    if (!Room.hasOwnProperty("my")) {
+    if (!Room.prototype.hasOwnProperty("my")) {
         Object.defineProperty(
             Room.prototype, "my", {
                 get: function() {
@@ -10,7 +10,7 @@ module.exports.apply = function() {
             });
     }
 
-    if (!Room.hasOwnProperty("neutral")) {
+    if (!Room.prototype.hasOwnProperty("neutral")) {
         Object.defineProperty(
             Room.prototype, "neutral", {
                 get: function() {
@@ -19,7 +19,7 @@ module.exports.apply = function() {
             });
     }
 
-    if (!Room.hasOwnProperty("claimable")) {
+    if (!Room.prototype.hasOwnProperty("claimable")) {
         Object.defineProperty(
             Room.prototype, "claimable", {
                 get: function() {
@@ -30,7 +30,7 @@ module.exports.apply = function() {
             });
     }
 
-    if (!Room.hasOwnProperty("claimed")) {
+    if (!Room.prototype.hasOwnProperty("claimed")) {
         Object.defineProperty(
             Room.prototype, "claimed", {
                 get: function() {
@@ -39,7 +39,7 @@ module.exports.apply = function() {
             });
     }
 
-    if (!Room.hasOwnProperty("otherPlayer")) {
+    if (!Room.prototype.hasOwnProperty("otherPlayer")) {
         Object.defineProperty(
             Room.prototype, "otherPlayer", {
                 get: function() {
@@ -48,7 +48,7 @@ module.exports.apply = function() {
             });
     }
 
-    if (!Room.hasOwnProperty("username")) {
+    if (!Room.prototype.hasOwnProperty("username")) {
         Object.defineProperty(
             Room.prototype, "username", {
                 get: function() {
