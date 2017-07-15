@@ -86,7 +86,7 @@ module.exports = {
         if (!flag) {
             flag = this.getTargetFlag();
         }
-        return Game.map.getRoomLinearDistance(room.name, flag.pos.roomName) <= ROOM_RANGE;
+        return flag && Game.map.getRoomLinearDistance(room.name, flag.pos.roomName) <= ROOM_RANGE;
     },
 
     shouldDeployCreeps: function() {
