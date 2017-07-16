@@ -93,12 +93,6 @@ module.exports = {
             creep.logDebug("entering " + creep.pos.roomName + " to " + creep.memory.intent);
 
             delete status.detourPath;
-
-            // TODO remove legacy status handling
-            if (!status.roomPaths) {
-                var targetPosition = this.getTargetPosition(status);
-                status.path = Room.serializePath(creep.pos.findPathTo(targetPosition, {ignoreCreeps: true}));
-            }
         }
 
         if (this.isTargetInRange(creep, status)) {
@@ -108,13 +102,9 @@ module.exports = {
         else {
             this.checkAndAdaptMovement(creep, status);
             creep.logDebug("moving");
-            // TODO remove legacy status handling
-            if (status.roomPaths) {
-                var roomPath = this.getCurrentRoomPath(creep, status);
-                creep.moveByPath(roomPath);
-            } else {
-                creep.moveByPath(status.path);
-            }
+
+            var roomPath = this.getCurrentRoomPath(creep, status);
+            creep.moveByPath(roomPath);
         }
     },
 
