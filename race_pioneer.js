@@ -36,7 +36,7 @@ module.exports = {
     getPioneerTargetRoomNames: function() {
         var result = [];
         _.each(Game.rooms, (room) => {
-            if (room.my && room.find(FIND_MY_SPAWNS).length == 0) {
+            if (room.my && !room.hasOwnSpawns) {
                 result.push(room.name);
             }
         });
@@ -71,7 +71,7 @@ module.exports = {
     },
 
     getAppropriateCreepSize: function(room) {
-        var maximumSize = Math.floor(room.energyCapacityAvailable / COST_PER_SIZE);
+        var maximumSize = Math.floor(1800 / COST_PER_SIZE);
         var result = Math.min(maximumSize, Math.floor(50 / PARTS_PER_SIZE));
         return result;
     },

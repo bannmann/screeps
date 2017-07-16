@@ -11,7 +11,7 @@ module.exports = {
     },
     isPermitted: function(creep) {
         // If there is a spawn, don't suck up all creeps for building - always leave some for 'chargeSpawn' intent
-        return creep.room.energyCapacityAvailable == 0 || creep.belongsToGroup(0, 2);
+        return !creep.room.hasOwnSpawns || creep.belongsToGroup(0, 2);
     },
     listPossibilities: function(creep) {
         var result = [];

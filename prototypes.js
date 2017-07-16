@@ -8,6 +8,7 @@ const PROTOTYPE_NAMES = [
     "gameUserName",
     "memory",
     "roomOwnership",
+    "roomStructures",
     "roomPositionDirection",
     "roomPositionObstacle",
     "roomPositionRampart",
