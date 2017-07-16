@@ -4,6 +4,7 @@ const ACCEPTABLE_PAUSES_PER_TARGET = 1;
 const MAX_PAUSE_LIST_LENGTH = 10;
 
 var pathsUtil = require("util_paths");
+var intentsUtil = require("util_intents");
 
 module.exports = {
     onTickStarting: function() {
@@ -88,23 +89,53 @@ module.exports = {
     perform: function(creep) {
         var status = this.getStatus(creep);
 
-        if (status.lastRoom != creep.pos.roomName) {
-            // The creep just switched rooms and is now located on the new room's exit. Leave it to avoid oscillating.
-            creep.logDebug("entering " + creep.pos.roomName + " to " + creep.memory.intent);
+        var roomPath = this.getCurrentRoomPath(creep, status);
+        if (roomPath) {
+            if (status.lastRoom != creep.pos.roomName) {
+                creep.logDebug("entering " + creep.pos.roomName + " to " + creep.memory.intent);
 
-            delete status.detourPath;
-        }
+                delete status.detourPath;
 
-        if (this.isTargetInRange(creep, status)) {
-            creep.logDebug("stopping");
-            this.stop(creep);
-        }
-        else {
-            this.checkAndAdaptMovement(creep, status);
-            creep.logDebug("moving");
+                // If the creep is not where it should be, leave the room exit to avoid oscillating.
+                if (!creep.pos.isNearTo(roomPath[0].x, roomPath[0].y)) {
+                    var inwards = creep.pos.getDirectionTo(25, 25);
+                    creep.move(inwards);
+                }
+            } else {
+                if (status.detourPath) {
+                    roomPath = status.detourPath;
+                }
+            }
 
-            var roomPath = this.getCurrentRoomPath(creep, status);
-            creep.moveByPath(roomPath);
+            if (this.isTargetInRange(creep, status)) {
+                creep.logDebug("stopping");
+                this.stop(creep);
+            }
+            else {
+                this.checkAndAdaptMovement(creep, status);
+                creep.logDebug("moving");
+
+                var result = creep.moveByPath(roomPath);
+                switch (result) {
+                    case OK:
+                        break;
+                    case ERR_NOT_FOUND:
+                        creep.logDebug("resetting - " + this.makePositionString(creep.pos) + " not on path " + JSON.stringify(roomPath));
+                        intentsUtil.reset(creep);
+                        break;
+                    default:
+                        creep.logDebug(
+                            "resetting - moveByPath returned " + result + " at " + this.makePositionString(creep.pos) +
+                            " for " + JSON.stringify(roomPath));
+                        intentsUtil.reset(creep);
+                        break;
+                }
+            }
+        } else {
+            creep.logDebug(
+                "resetting - " + this.makePositionString(creep.pos) + " is not within planned rooms " +
+                Object.keys(status.roomPaths).join(", "));
+            intentsUtil.reset(creep);
         }
     },
 
@@ -146,8 +177,8 @@ module.exports = {
 
     getCurrentRoomPath: function(creep, status) {
         var result = status.roomPaths[creep.pos.roomName];
-        if (status.detourPath) {
-            result = status.detourPath;
+        if (result) {
+            result = Room.deserializePath(result);
         }
         return result;
     },
@@ -193,7 +224,7 @@ module.exports = {
             result = finalTarget;
         } else {
             // Target is the end position of the path within this room so it aligns with the path in the next room
-            var roomPath = Room.deserializePath(this.getCurrentRoomPath(creep, status));
+            var roomPath = this.getCurrentRoomPath(creep, status);
             var lastStep = _.last(roomPath);
             result = new RoomPosition(lastStep.x, lastStep.y, creep.pos.roomName);
         }
