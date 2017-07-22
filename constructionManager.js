@@ -150,10 +150,26 @@ module.exports = {
     },
 
     isFree: function(room, x, y) {
+        return this.hasNoStructure(room, x, y) && !this.isBlockingSource(room, x, y);
+    },
+
+    hasNoStructure: function(room, x, y) {
         var result = _.filter(
                 room.lookAt(x, y), (entry) => {
                     return entry.type == LOOK_TERRAIN && entry.terrain == "wall" || entry.type == LOOK_STRUCTURES;
                 }).length == 0;
+        return result;
+    },
+
+    isBlockingSource: function(room, x, y) {
+        var result = false;
+        var sourceObjects = room.find(FIND_SOURCES);
+        _.each(
+            sourceObjects, (sourceObject) => {
+                if (sourceObject.pos.isNearTo(x, y)) {
+                    result = true;
+                }
+            });
         return result;
     },
 
