@@ -1,6 +1,6 @@
 const DEPLOYED = "DEPLOYED";
 const READY = "READY";
-const ROOM_RANGE = 6;
+const ROOM_RANGE = 5;
 
 var logger = require("logger");
 var creepDirectory = require("creepDirectory");
