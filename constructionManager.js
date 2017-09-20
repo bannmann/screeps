@@ -1,4 +1,5 @@
 const CHECK_INTERVAL = 500;
+const SITE_SEARCH_LIMIT = 200;
 
 var logger = require("logger");
 var Objects = require("util_objects");
@@ -125,7 +126,7 @@ module.exports = {
             }
 
             siteIndexGlobal++;
-            if (siteIndexGlobal > 100) {
+            if (siteIndexGlobal > SITE_SEARCH_LIMIT) {
                 Game.notify("ConstructionManager could not find enough sites in room " + room.name);
                 break;
             }
