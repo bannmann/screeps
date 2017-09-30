@@ -2,3 +2,6 @@
 *.iml
 /.project
 playground.js
+.screeps.json
+package-lock.json
+node_modules

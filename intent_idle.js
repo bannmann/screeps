@@ -94,3 +94,4 @@ module.exports = {
         creep.room.visual.text("\u258c\u258c", creep.pos.x + 0.05, creep.pos.y + 0.1, { color: "black", size: 0.3 });
     }
 };
+require('util_profiler').registerModule(module);

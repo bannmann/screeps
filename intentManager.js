@@ -67,3 +67,4 @@ module.exports.processIntents = function() {
         creep.logDebug("intentManager finish");
     });
 };
+require('util_profiler').registerModule(module);

@@ -19,3 +19,4 @@ module.exports = {
         return data.flags[name];
     }
 };
+require('util_profiler').registerModule(module);

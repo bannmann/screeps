@@ -71,3 +71,4 @@ module.exports = {
         intentsUtil.finish(creep, this, claimResult);
     }
 };
+require('util_profiler').registerModule(module);

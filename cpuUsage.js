@@ -54,3 +54,4 @@ module.exports = {
         Memory.CpuUsage = this.data;
     }
 };
+require('util_profiler').registerModule(module);

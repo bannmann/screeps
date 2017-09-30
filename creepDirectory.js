@@ -50,3 +50,4 @@ module.exports = {
         return result;
     }
 };
+require('util_profiler').registerModule(module);

@@ -33,3 +33,4 @@ module.exports = {
         room.controller.activateSafeMode();
     }
 };
+require('util_profiler').registerModule(module);

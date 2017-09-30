@@ -113,3 +113,4 @@ module.exports = {
         return data.gatheringFlag;
     }
 };
+require('util_profiler').registerModule(module);

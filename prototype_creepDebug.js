@@ -16,3 +16,4 @@ module.exports.apply = function() {
         this._log(message);
     }
 };
+require('util_profiler').registerModule(module);

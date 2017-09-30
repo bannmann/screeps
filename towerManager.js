@@ -15,10 +15,7 @@ module.exports = {
             Game.rooms, (room) => {
                 var enemy = enemyDirectory.getTarget(room);
 
-                var towers = room.find(
-                    FIND_STRUCTURES, {
-                        filter: {structureType: STRUCTURE_TOWER}
-                    });
+                var towers = this.getTowers(room);
 
                 _.each(
                     towers, (tower) => {
@@ -45,6 +42,14 @@ module.exports = {
                         }
                     });
             });
+    },
+
+    getTowers: function(room) {
+        var result = room.find(
+            FIND_STRUCTURES, {
+                filter: {structureType: STRUCTURE_TOWER}
+            });
+        return result;
     },
 
     healCreeps: function(tower) {
@@ -201,3 +206,4 @@ module.exports = {
         return structure.structureType == STRUCTURE_WALL || structure.structureType == STRUCTURE_RAMPART;
     }
 };
+require('util_profiler').registerModule(module);

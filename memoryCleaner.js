@@ -18,3 +18,4 @@ module.exports.clean = function() {
     }
 
 };
+require('util_profiler').registerModule(module);

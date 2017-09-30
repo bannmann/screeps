@@ -20,3 +20,4 @@ module.exports = {
         return (parsed[1] % 10 === 0) || (parsed[2] % 10 === 0);
     }
 };
+require('util_profiler').registerModule(module);

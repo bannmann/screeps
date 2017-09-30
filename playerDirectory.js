@@ -77,3 +77,4 @@ module.exports = {
         return _.remove(list, predicate);
     }
 };
+require('util_profiler').registerModule(module);

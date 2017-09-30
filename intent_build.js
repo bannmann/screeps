@@ -53,3 +53,4 @@ module.exports = {
         }
     }
 };
+require('util_profiler').registerModule(module);

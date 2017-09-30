@@ -71,3 +71,4 @@ module.exports = {
         return Objects.loadPath(Memory, ["EnemyDirectory", "rooms", room.name], propertyName);
     }
 };
+require('util_profiler').registerModule(module);

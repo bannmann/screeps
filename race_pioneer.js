@@ -80,3 +80,4 @@ module.exports = {
         return creepDirectory.getRoomRaceCount(room.name, "worker");
     }
 };
+require('util_profiler').registerModule(module);

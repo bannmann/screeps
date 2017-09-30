@@ -178,3 +178,4 @@ module.exports = {
         Objects.savePath(Memory, ["ConstructionManager", "rooms", room.name], "level", this.getCurrentRoomLevel(room));
     }
 };
+require('util_profiler').registerModule(module);

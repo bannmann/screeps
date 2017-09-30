@@ -49,3 +49,4 @@ module.exports = {
         creep.notifyWhenAttacked(false);
     }
 };
+require('util_profiler').registerModule(module);

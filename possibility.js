@@ -46,4 +46,5 @@ module.exports = function(parameters) {
             creep.memory.intent = intent.name;
         }
     }
-}
+};
+require('util_profiler').registerModule(module);

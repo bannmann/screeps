@@ -27,3 +27,4 @@ module.exports = {
         return Objects.loadPath(Memory, ["RoomDirectory", "rooms", roomName], propertyName);
     }
 };
+require('util_profiler').registerModule(module);

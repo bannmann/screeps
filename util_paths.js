@@ -159,3 +159,4 @@ module.exports = {
         data.rooms = {};
     }
 };
+require('util_profiler').registerModule(module);
