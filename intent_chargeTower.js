@@ -40,6 +40,9 @@ module.exports = {
         if (creep.carry.energy == 0) {
             intentsUtil.abort(creep, this, "no energy");
         }
+        else if (!target) {
+            intentsUtil.abort(creep, this, "target " + creep.memory.target + " being gone");
+        }
         else if (target.energy == target.energyCapacity) {
             intentsUtil.abort(creep, this, "target " + creep.memory.target + " being full");
         }
