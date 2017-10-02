@@ -8,9 +8,27 @@ module.exports = {
     manage: function() {
         _.each(Game.flags,
             (flag) => {
-                if (flag.name.startsWith("spawnLocation") && flag.room && flag.room.controller && flag.room.controller.my) {
-                    flag.room.createConstructionSite(flag.pos, STRUCTURE_SPAWN);
-                    flag.remove();
+                var room = flag.room;
+                if (flag.name.startsWith("spawnLocation") && room && room.controller && room.controller.my) {
+                    var hostileStructures = room.find(FIND_HOSTILE_STRUCTURES);
+                    _.each(hostileStructures, (structure) => {
+                        if (structure.structureType != STRUCTURE_STORAGE) {
+                            var destroyResult = structure.destroy();
+                            if (destroyResult != OK) {
+                                Game.notify(
+                                    "ConstructionManager could not destroy enemy structure " + structure.id +
+                                    " in room " + room.name + ", error " + destroyResult);
+                            }
+                        }
+                    });
+
+                    var siteResult = room.createConstructionSite(flag.pos, STRUCTURE_SPAWN);
+                    if (siteResult == OK) {
+                        flag.remove();
+                    } else {
+                        Game.notify(
+                            "ConstructionManager could not place spawn in room " + room.name + ", error " + siteResult);
+                    }
                 }
             });
 
