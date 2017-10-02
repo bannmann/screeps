@@ -15,8 +15,11 @@ module.exports = {
             Game.rooms, (room) => {
                 var enemy = enemyDirectory.getTarget(room);
 
-                var towers = this.getTowers(room);
+                var structures = this.getStructures(room);
+                var towers = this.getTowers(structures);
 
+                var defenses = null;
+                var damagedBuildings = null;
                 _.each(
                     towers, (tower) => {
                         if (tower.energy >= 10) {
@@ -25,16 +28,20 @@ module.exports = {
                                 tower.attack(enemy);
                                 done = true;
                             }
-
-                            var defenses = this.getDefenses(tower);
                             if (!done) {
+                                if (!defenses) {
+                                    defenses = this.getDefenses(structures);
+                                }
                                 done = this.repairDefenses(tower, defenses);
                             }
                             if (!done) {
                                 done = this.healCreeps(tower);
                             }
                             if (!done) {
-                                done = this.repairBuildings(tower);
+                                if (!damagedBuildings) {
+                                    damagedBuildings = this.getDamagedBuildings(structures);
+                                }
+                                done = this.repairBuildings(tower, damagedBuildings);
                             }
                             if (!done) {
                                 done = this.reinforceDefenses(tower, defenses);
@@ -44,11 +51,18 @@ module.exports = {
             });
     },
 
-    getTowers: function(room) {
-        var result = room.find(
-            FIND_STRUCTURES, {
-                filter: {structureType: STRUCTURE_TOWER}
-            });
+    getStructures: function(room) {
+        var result = [];
+        _.each(Game.structures, (structure) => {
+            if (structure.pos.roomName == room.name) {
+                result.push(structure);
+            }
+        });
+        return result;
+    },
+
+    getTowers: function(roomStructures) {
+        var result = _.filter(roomStructures, {structureType: STRUCTURE_TOWER});
         return result;
     },
 
@@ -67,11 +81,8 @@ module.exports = {
         return result;
     },
 
-    getDefenses: function(tower) {
-        var result = tower.room.find(
-            FIND_STRUCTURES, {
-                filter: (structure) => this.isDefense(structure)
-            });
+    getDefenses: function(roomStructures) {
+        var result = _.filter(roomStructures, (structure) =>  this.isDefense(structure));
         return result;
     },
 
@@ -91,12 +102,14 @@ module.exports = {
             defenses, (defense) => {
                 var defenseHits = this.getEffectiveHits(defense);
                 if (defenseHits < lowestHits) {
-                    var damageTaken = this.getDamageTaken(defense);
-                    var repairAmount = this.calculateRepairAmount(tower, defense);
-                    // We cannot choose how much to repair, so we wait until damage equals the repair amount.
-                    if (damageTaken >= repairAmount) {
-                        job = {defense: defense, amount: repairAmount};
-                        lowestHits = defenseHits;
+                    var damageTaken = this.getDamageTaken(defense, defenseHits);
+                    if (damageTaken > 0) {
+                        var repairAmount = this.calculateRepairAmount(tower, defense);
+                        // We cannot choose how much to repair, so we wait until damage equals the repair amount.
+                        if (damageTaken >= repairAmount) {
+                            job = {defense: defense, amount: repairAmount};
+                            lowestHits = defenseHits;
+                        }
                     }
                 }
             });
@@ -131,8 +144,7 @@ module.exports = {
         return result;
     },
 
-    getDamageTaken: function(defense) {
-        var defenseHits = this.getEffectiveHits(defense);
+    getDamageTaken: function(defense, defenseHits) {
         defense.memory.strength = Math.max(defense.memory.strength | 0, defenseHits, MINIMUM_STRENGTH);
         return defense.memory.strength - defenseHits;
     },
@@ -142,16 +154,35 @@ module.exports = {
         data.defenseRepairAmounts[defense.id] = existingAmount + amount;
     },
 
-    repairBuildings: function(tower) {
+    getDamagedBuildings: function(roomStructures) {
+        var result = _.filter(roomStructures, (structure) => this.isRepairable(structure) && this.isDamaged(structure));
+        return result;
+    },
+
+    isRepairable: function(structure) {
+        return !this.isDefense(structure) && structure.structureType != STRUCTURE_ROAD;
+    },
+
+    isDamaged: function(structure) {
+        return structure.hits < structure.hitsMax;
+    },
+
+    repairBuildings: function(tower, damagedBuildings) {
         var result = false;
 
-        var damagedBuilding = tower.pos.findClosestByRange(
-            FIND_STRUCTURES, {
-                filter: (structure) => !this.isDefense(structure) &&
-                structure.structureType != STRUCTURE_ROAD && structure.hits < structure.hitsMax
-            });
-        if (damagedBuilding) {
-            tower.repair(damagedBuilding);
+        var chosenBuilding;
+        var chosenDistance = 99;
+        _.each(damagedBuildings, (structure) => {
+            var distance = tower.pos.getRangeTo(structure);
+            if (distance < chosenDistance) {
+                chosenBuilding = structure;
+                chosenDistance = distance;
+            }
+        });
+
+        if (chosenBuilding) {
+            // For simplicity, damagedBuildings is not updated. Multiple towers might repair the same building.
+            tower.repair(chosenBuilding);
             result = true;
         }
 
