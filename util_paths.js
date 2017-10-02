@@ -1,5 +1,6 @@
 const OBSTACLE_COST = 255;
 const EXIT_COST = 6;
+const MAX_OPS = 20000;
 
 var roomsUtil = require("util_rooms");
 var roomDirectory = require("roomDirectory");
@@ -46,7 +47,7 @@ module.exports = {
                     }
                     return result;
                 },
-                maxOps: 6000
+                maxOps: MAX_OPS
             });
     },
 
@@ -62,7 +63,10 @@ module.exports = {
         if (roomsUtil.isHighway(roomName)) {
             return 0.75;
         }
-        else if (roomsUtil.hasSourceKeepers(roomName) || roomDirectory.isEnemyTerritory(roomName)) {
+        else if (roomsUtil.hasSourceKeepers(roomName)) {
+            return 3;
+        }
+        else if (roomDirectory.isEnemyTerritory(roomName)) {
             return 7;
         }
         else {
