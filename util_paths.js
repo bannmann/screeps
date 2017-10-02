@@ -26,6 +26,7 @@ module.exports = {
 
     invokePathFinder: function(from, to, intentRange) {
         var allowedRooms;
+        var roomList = [];
         if (this.needsRoomRouting(from, to)) {
             var route = Game.map.findRoute(from.roomName, to.roomName, {routeCallback: this.getRoomCost});
 
@@ -33,10 +34,11 @@ module.exports = {
             _.each(
                 route, (info) => {
                     allowedRooms[info.room] = true;
+                    roomList.push(info.room);
                 });
         }
 
-        return PathFinder.search(
+        result = PathFinder.search(
             from, {pos: to, range: intentRange}, {
                 roomCallback: (roomName) => {
                     var result;
@@ -49,6 +51,15 @@ module.exports = {
                 },
                 maxOps: MAX_OPS
             });
+        result.roomList = roomList;
+        return result;
+    },
+
+    getPathMetaInfo: function(from, to, intentRange) {
+        var result = this.invokePathFinder(from, to, intentRange);
+        result.pathLength = _.size(result.path);
+        delete result.path;
+        return JSON.stringify(result);
     },
 
     needsRoomRouting: function(from, to) {
