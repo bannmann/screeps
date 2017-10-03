@@ -29,8 +29,12 @@ module.exports = {
     },
 
     activate: function(room) {
-        Game.notify("Activating safe mode for room " + room.name);
-        room.controller.activateSafeMode();
+        var result = room.controller.activateSafeMode();
+        if (result == OK) {
+            Game.notify("Activated safe mode for room " + room.name);
+        } else {
+            Game.notify("Could not activate safe mode for room " + room.name + ", error " + result);
+        }
     }
 };
 require('util_profiler').registerModule(module);
