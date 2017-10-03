@@ -28,6 +28,10 @@ module.exports = {
             creep.memory.race = "worker";
             intentsUtil.reset(creep);
         }
+
+        if (creep.hits < creep.hitsMax && creep.hasActiveBodyparts(HEAL)) {
+            creep.heal(creep);
+        }
     }
 };
 require('util_profiler').registerModule(module);

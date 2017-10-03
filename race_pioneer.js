@@ -1,5 +1,7 @@
-const COST_PER_SIZE = 250;
-const PARTS_PER_SIZE = 4;
+const COST_PER_SIZE = BODYPART_COST[TOUGH] * 2 + BODYPART_COST[WORK] + BODYPART_COST[CARRY] + BODYPART_COST[MOVE] * 4;
+const FIXED_COSTS = BODYPART_COST[MOVE] + BODYPART_COST[HEAL];
+const PARTS_PER_SIZE = 8;
+const FIXED_PARTS = 2;
 const PIONEER_COUNT = 5;
 
 var logger = require("logger");
@@ -58,21 +60,27 @@ module.exports = {
 
         var configuration = [];
         for (var i = 0; i < creepSize; i++) {
-            configuration.push(WORK);
+            configuration.push(TOUGH);
+            configuration.push(TOUGH);
         }
         for (var i = 0; i < creepSize; i++) {
+            configuration.push(WORK);
             configuration.push(CARRY);
         }
-        for (var i = 0; i < creepSize; i++) {
-            configuration.push(MOVE);
+        for (var i = 0; i < creepSize * 4; i++) {
             configuration.push(MOVE);
         }
+
+        // Fixed parts
+        configuration.push(MOVE);
+        configuration.push(HEAL);
+
         return configuration;
     },
 
     getAppropriateCreepSize: function(room) {
-        var maximumSize = Math.floor(1800 / COST_PER_SIZE);
-        var result = Math.min(maximumSize, Math.floor(50 / PARTS_PER_SIZE));
+        var maximumSize = Math.floor((room.energyCapacityAvailable - FIXED_COSTS) / COST_PER_SIZE);
+        var result = Math.min(maximumSize, Math.floor((50 - FIXED_PARTS) / PARTS_PER_SIZE));
         return result;
     },
 
