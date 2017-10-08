@@ -1,4 +1,5 @@
 const PROTOTYPE_NAMES = [
+    "language", // needs to stay at position 0
     "creepBody",
     "creepCarry",
     "creepDebug",

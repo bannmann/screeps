@@ -34,7 +34,7 @@ module.exports = {
 
         _.each(Game.rooms,
             (room) => {
-                if (this.isCheckScheduled() || this.isRoomLevelDifferent(room)) {
+                if (this.isCheckScheduled(room) || this.isRoomLevelDifferent(room)) {
                     var level = this.getCurrentRoomLevel(room);
                     this.ensureEnoughExtensionsExist(room, level);
                     this.updateKnownRoomLevel(room);
@@ -42,8 +42,8 @@ module.exports = {
             });
     },
 
-    isCheckScheduled: function() {
-        return Game.time % CHECK_INTERVAL == 0;
+    isCheckScheduled: function(room) {
+        return Game.time % CHECK_INTERVAL == room.name.hashCode() % CHECK_INTERVAL;
     },
 
     isRoomLevelDifferent: function(room) {
@@ -74,17 +74,16 @@ module.exports = {
 
             var extensionsToBuild = maxExtensionCount - extensions - extensionsBeingBuilt;
             if (extensionsToBuild > 0) {
-                logger.log(room.name + " gets " + extensionsToBuild + " extensions");
-            }
+                var spawns = room.find(FIND_MY_STRUCTURES, {
+                    filter: { structureType: STRUCTURE_SPAWN }
+                });
 
-            var spawns = room.find(FIND_MY_STRUCTURES, {
-                filter: { structureType: STRUCTURE_SPAWN }
-            });
+                if (spawns.length > 0) {
+                    var spawn = spawns[0];
 
-            if (spawns.length > 0) {
-                var spawn = spawns[0];
-
-                this.createExtensions(room, extensionsToBuild, spawn);
+                    logger.log(room.name + " gets " + extensionsToBuild + " extensions");
+                    this.createExtensions(room, extensionsToBuild, spawn);
+                }
             }
         }
     },
