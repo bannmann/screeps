@@ -35,9 +35,7 @@ module.exports = {
         _.each(Game.rooms,
             (room) => {
                 if (this.isCheckScheduled(room) || this.isRoomLevelDifferent(room)) {
-                    var level = this.getCurrentRoomLevel(room);
-                    this.ensureEnoughExtensionsExist(room, level);
-                    this.updateKnownRoomLevel(room);
+                    this.checkRoom(room);
                 }
             });
     },
@@ -60,6 +58,13 @@ module.exports = {
     getCurrentRoomLevel: function(room) {
         // Why 0? Not all rooms have a controller.
         return Objects.loadPath(room, ["controller"], "level") || 0;
+    },
+
+    checkRoom: function(room) {
+        var level = this.getCurrentRoomLevel(room);
+        this.ensureEnoughExtensionsExist(room, level);
+        this.scanWalls(room);
+        this.updateKnownRoomLevel(room);
     },
 
     ensureEnoughExtensionsExist: function(room, level) {
@@ -191,8 +196,25 @@ module.exports = {
         return result;
     },
 
+    scanWalls: function(room) {
+        var wallIds = [];
+        const wallObjects = room.find(
+            FIND_STRUCTURES, {
+                filter: {structureType: STRUCTURE_WALL}
+            });
+        _.each(wallObjects, (wall) => wallIds.push(wall.id));
+        Objects.savePath(Memory, ["ConstructionManager", "rooms", room.name], "wallIds", wallIds);
+    },
+
     updateKnownRoomLevel: function(room) {
         Objects.savePath(Memory, ["ConstructionManager", "rooms", room.name], "level", this.getCurrentRoomLevel(room));
+    },
+
+    getWalls: function(room) {
+        var result = [];
+        var ids = Objects.loadPath(Memory, ["ConstructionManager", "rooms", room.name], "wallIds");
+        _.each(ids, (id) => result.push(Game.getObjectById(id)));
+        return result;
     }
 };
 require('util_profiler').registerModule(module);

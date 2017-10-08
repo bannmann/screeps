@@ -3,6 +3,7 @@ const REINFORCEMENT_MIN_PEACE_TICKS = 100;
 const REINFORCEMENT_INTERVAL = 20;
 var flagDirectory = require("flagDirectory");
 var enemyDirectory = require("enemyDirectory");
+var constructionManager = require("constructionManager");
 var Objects = require("util_objects");
 
 var data = {};
@@ -30,7 +31,7 @@ module.exports = {
                             }
                             if (!done) {
                                 if (!defenses) {
-                                    defenses = this.getDefenses(structures);
+                                    defenses = this.getDefenses(structures, room);
                                 }
                                 done = this.repairDefenses(tower, defenses);
                             }
@@ -81,8 +82,15 @@ module.exports = {
         return result;
     },
 
-    getDefenses: function(roomStructures) {
-        var result = _.filter(roomStructures, (structure) =>  this.isDefense(structure));
+    getDefenses: function(roomStructures, room) {
+        var result = [];
+        _.each(constructionManager.getWalls(room), (wall) => result.push(wall));
+        _.each(this.getRamparts(roomStructures), (rampart) => result.push(rampart));
+        return result;
+    },
+
+    getRamparts: function(roomStructures) {
+        var result = _.filter(roomStructures, { structureType: STRUCTURE_RAMPART });
         return result;
     },
 
