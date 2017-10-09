@@ -2,7 +2,7 @@ require("prototypeManager").applyPrototypes();
 const profiler = require('screeps-profiler');
 
 var safeModeManager = require("safeModeManager");
-var memoryCleaner = require("memoryCleaner");
+var memoryManager = require("memoryManager");
 var intentManager = require("intentManager");
 var spawnManager = require("spawnManager");
 var towerManager = require("towerManager");
@@ -10,14 +10,16 @@ var constructionManager = require("constructionManager");
 var armyManager = require("armyManager");
 var logger = require("logger");
 var listeners = require("listeners");
+var timeoutManager = require("timeoutManager");
 
 profiler.enable();
 module.exports.loop = function() {
     profiler.wrap(function() {
-        PathFinder.use(true);
+        memoryManager.init();
+        timeoutManager.start();
 
         safeModeManager.manage();
-        memoryCleaner.clean();
+        memoryManager.clean();
 
         listeners.fireTickStarting();
 
@@ -28,5 +30,6 @@ module.exports.loop = function() {
         spawnManager.spawnCreepIfNecessary();
 
         listeners.fireTickEnding();
+        timeoutManager.stop();
     });
 };
