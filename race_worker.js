@@ -1,6 +1,6 @@
 const COST_PER_SIZE = 250;
 const PARTS_PER_SIZE = 4;
-const BASE_WORKER_COUNT = 2;
+const BASE_WORKER_COUNT = 5;
 const MAX_IDLE_RATIO = 0.1;
 
 var logger = require("logger");
@@ -12,13 +12,14 @@ module.exports = {
     getPlans: function(room) {
         var result = [];
 
-        if (this.areCreepsBusy(room) && this.areWorkersMature(room) && cpuUsage.isLow()) {
-            var importance = 0.1;
-            if (this.getWorkerCount(room) < BASE_WORKER_COUNT) {
-                importance = 0.9;
-            }
+        if (this.getWorkerCount(room) < BASE_WORKER_COUNT) {
             result.push({
-                importance: importance,
+                importance: 0.9,
+                body: this.getBody(room)
+            });
+        } else if (this.areCreepsBusy(room) && this.areWorkersMature(room) && cpuUsage.isLow()) {
+            result.push({
+                importance: 0.1,
                 body: this.getBody(room)
             });
         }
