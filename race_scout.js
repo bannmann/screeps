@@ -12,7 +12,7 @@ module.exports = {
                 if (flag.name.startsWith("scout") && this.isScoutNeeded() && this.isInScoutingRange(room, flag)) {
                     result = [{
                         importance: BASE_IMPORTANCE,
-                        body: [MOVE]
+                        body: this.getBody(room)
                     }];
                 }
             });
@@ -26,6 +26,20 @@ module.exports = {
 
     isInScoutingRange: function(room, flag) {
         return Game.map.getRoomLinearDistance(room.name, flag.pos.roomName) <= ROOM_RANGE;
+    },
+
+    getBody: function(room) {
+        var creepSize = 5;
+
+        var configuration = [];
+        for (var i = 0; i < creepSize; i++) {
+            configuration.push(TOUGH);
+        }
+        for (var i = 0; i < creepSize; i++) {
+            configuration.push(MOVE);
+        }
+
+        return configuration;
     },
 
     initializeCreep: function(creep) {

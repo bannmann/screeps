@@ -31,6 +31,7 @@ module.exports = {
             moveAction.perform(creep);
         }
         else {
+            Game.notify("Scout " + creep.name + " reached " + creep.pos + " at age " + creep.ticksLived);
             intentsUtil.reset(creep);
         }
     }
