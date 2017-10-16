@@ -213,7 +213,12 @@ module.exports = {
     getWalls: function(room) {
         var result = [];
         var ids = Objects.loadPath(Memory, ["ConstructionManager", "rooms", room.name], "wallIds");
-        _.each(ids, (id) => result.push(Game.getObjectById(id)));
+        _.each(ids, (id) => {
+            var wall = Game.getObjectById(id);
+            if (wall) {
+                result.push(wall);
+            }
+        });
         return result;
     }
 };
