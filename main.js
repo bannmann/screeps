@@ -10,13 +10,11 @@ var constructionManager = require("constructionManager");
 var armyManager = require("armyManager");
 var logger = require("logger");
 var listeners = require("listeners");
-var timeoutManager = require("timeoutManager");
 
 profiler.enable();
 module.exports.loop = function() {
     profiler.wrap(function() {
         memoryManager.init();
-        timeoutManager.start();
 
         safeModeManager.manage();
         memoryManager.clean();
@@ -30,6 +28,5 @@ module.exports.loop = function() {
         spawnManager.spawnCreepIfNecessary();
 
         listeners.fireTickEnding();
-        timeoutManager.stop();
     });
 };
