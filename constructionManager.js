@@ -6,36 +6,13 @@ var Objects = require("util_objects");
 
 module.exports = {
     manage: function() {
-        _.each(Game.flags,
-            (flag) => {
-                var room = flag.room;
-                if (flag.name.startsWith("spawnLocation") && room && room.controller && room.controller.my) {
-                    var hostileStructures = room.find(FIND_HOSTILE_STRUCTURES);
-                    _.each(hostileStructures, (structure) => {
-                        if (structure.structureType != STRUCTURE_STORAGE) {
-                            var destroyResult = structure.destroy();
-                            if (destroyResult != OK) {
-                                Game.notify(
-                                    "ConstructionManager could not destroy enemy structure " + structure.id +
-                                    " in room " + room.name + ", error " + destroyResult);
-                            }
-                        }
-                    });
-
-                    var siteResult = room.createConstructionSite(flag.pos, STRUCTURE_SPAWN);
-                    if (siteResult == OK) {
-                        flag.remove();
-                    } else {
-                        Game.notify(
-                            "ConstructionManager could not place spawn in room " + room.name + ", error " + siteResult);
-                    }
-                }
-            });
-
         _.each(Game.rooms,
             (room) => {
                 if (this.isCheckScheduled(room) || this.isRoomLevelDifferent(room)) {
                     this.checkRoom(room);
+                }
+                if (this.needsSpawn(room)) {
+                    this.createSpawn(room);
                 }
             });
     },
@@ -220,6 +197,136 @@ module.exports = {
             }
         });
         return result;
+    },
+
+    needsSpawn: function(room) {
+        return room.claimed && this.hasNoSpawns(room) && this.hasNoSpawnConstructionSite(room);
+    },
+
+    hasNoSpawns: function(room) {
+        return room.find(FIND_MY_SPAWNS).length == 0;
+    },
+
+    hasNoSpawnConstructionSite: function(room) {
+        return room.find(
+                FIND_MY_CONSTRUCTION_SITES, {
+                    filter: {structureType: STRUCTURE_SPAWN}
+                }).length == 0;
+    },
+
+    createSpawn: function(room) {
+        var hostileStructures = room.find(FIND_HOSTILE_STRUCTURES);
+        _.each(hostileStructures, (structure) => {
+            if (structure.structureType != STRUCTURE_STORAGE) {
+                var destroyResult = structure.destroy();
+                if (destroyResult != OK) {
+                    Game.notify(
+                        "ConstructionManager could not destroy enemy structure " + structure.id +
+                        " in room " + room.name + ", error " + destroyResult);
+                }
+            }
+        });
+
+        var spawnPosition = null;
+        var sources = room.find(FIND_SOURCES);
+        switch(sources.length) {
+            case 0:
+                Game.notify("ConstructionManager could not place spawn, no sources found");
+                break;
+            case 1:
+                var pathFinderResult = PathFinder.search(sources[0].pos, {pos: room.controller.pos, range: 1});
+                var index = Math.min(5, parseInt(pathFinderResult.path.length / 2));
+                spawnPosition = pathFinderResult.path[index];
+                break;
+            case 2:
+                var pathFinderResult = PathFinder.search(sources[0].pos, {pos: sources[1].pos, range: 1});
+                spawnPosition = pathFinderResult.path[parseInt(pathFinderResult.path.length / 2)];
+                break;
+            default:
+                var sortedSources = _.sortBy(sources, "id");
+                var waypointTopLeft = {x: 50, y: 50};
+                var waypointBottomRight = {x: 0, y: 0};
+                var waypointSum = {x: 0, y: 0};
+                var waypointCount = 0;
+                for (var origin = 0; origin < sortedSources.length - 1; origin++) {
+                    for (var destination = origin + 1; destination < sortedSources.length; destination++) {
+                        var pathFinderResult = PathFinder.search(
+                            sortedSources[origin].pos, {
+                                pos: sortedSources[destination].pos, range: 1
+                            });
+
+                        var waypoint = pathFinderResult.path[parseInt(pathFinderResult.path.length / 2)];
+
+                        waypointTopLeft.x = Math.min(waypointTopLeft.x, waypoint.x);
+                        waypointTopLeft.y = Math.min(waypointTopLeft.y, waypoint.y);
+                        waypointBottomRight.x = Math.max(waypointTopLeft.x, waypoint.x);
+                        waypointBottomRight.y = Math.max(waypointTopLeft.y, waypoint.y);
+
+                        waypointSum.x += waypoint.x;
+                        waypointSum.y += waypoint.y;
+
+                        waypointCount++;
+                    }
+                }
+
+                var average = new RoomPosition(
+                    parseInt(waypointSum.x / waypointCount),
+                    parseInt(waypointSum.y / waypointCount),
+                    room.name);
+
+                var diameter = 1;
+                var siteIndexInDiameter = 0;
+                while (true) {
+                    var x;
+                    var y;
+                    var sitesPerSide = diameter * 2;
+                    var side = Math.floor(siteIndexInDiameter / sitesPerSide);
+                    var siteIndexInSide = siteIndexInDiameter % sitesPerSide;
+
+                    switch (side) {
+                        case 0:
+                            x = average.x - diameter + siteIndexInSide;
+                            y = average.y - diameter;
+                            break;
+                        case 1:
+                            x = average.x + diameter;
+                            y = average.y - diameter + siteIndexInSide;
+                            break;
+                        case 2:
+                            x = average.x + diameter - siteIndexInSide;
+                            y = average.y + diameter;
+                            break;
+                        case 3:
+                            x = average.x - diameter;
+                            y = average.y + diameter - siteIndexInSide;
+                            break;
+                    }
+                    if (this.isFree(room, x, y)) {
+                        spawnPosition = new RoomPosition(x, y, room.name);
+                        break;
+                    }
+
+                    if (side == 3 && siteIndexInSide == sitesPerSide - 1) {
+                        diameter++;
+                        siteIndexInDiameter = 0;
+                    }
+                    else {
+                        siteIndexInDiameter++;
+                    }
+                }
+                break;
+        }
+
+        if (spawnPosition) {
+            var siteResult = room.createConstructionSite(spawnPosition, STRUCTURE_SPAWN);
+            if (siteResult == OK) {
+                logger.log("Created spawn at " + spawnPosition);
+            }
+            else {
+                Game.notify(
+                    "ConstructionManager could not place spawn at " + spawnPosition + ", error " + siteResult);
+            }
+        }
     }
 };
 require('util_profiler').registerModule(module);

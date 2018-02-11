@@ -67,6 +67,8 @@ module.exports = {
         if (claimResult == OK) {
             Game.notify("Room " + creep.pos.roomName + " was claimed.");
             Game.flags[creep.memory.intentStatus.flagName].remove();
+        } else {
+            Game.notify("Could not claim " + creep.pos.roomName + ", error " + claimResult);
         }
         intentsUtil.finish(creep, this, claimResult);
     }
