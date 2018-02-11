@@ -3,8 +3,15 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-screeps');
     grunt.loadNpmTasks('grunt-rsync');
+    grunt.loadNpmTasks('grunt-contrib-copy');
 
     grunt.initConfig({
+        copy: {
+            prepare: {
+                files: [{src: 'node_modules/screeps-profiler/screeps-profiler.js', dest: 'screeps-profiler.js'}]
+            }
+        },
+
         screeps: {
             options: {
                 email: config.email,
@@ -16,8 +23,7 @@ module.exports = function(grunt) {
                 files: [
                     {
                         src: [
-                            '*.js',
-                            'node_modules/screeps-profiler/screeps-profiler.js'
+                            '*.js'
                         ]
                     }
                 ]
@@ -26,9 +32,9 @@ module.exports = function(grunt) {
 
         rsync: {
             options: {
-                args: ["--verbose", "--checksum"],
+                args: ["--verbose", "--checksum", "-d"],
                 exclude: [".git*"],
-                recursive: false
+                delete: true
             },
             private: {
                 options: {
@@ -38,4 +44,7 @@ module.exports = function(grunt) {
             }
         }
     });
+
+    grunt.registerTask('dist', ['copy:prepare', 'screeps:dist']);
+    grunt.registerTask('private', ['copy:prepare', 'rsync:private']);
 }
