@@ -2,5 +2,6 @@
     "email": "...",
     "password": "...",
     "branch": "default",
-    "ptr": false
+    "ptr": false,
+    "private_directory": "..."
 }
