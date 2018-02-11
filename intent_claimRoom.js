@@ -1,3 +1,4 @@
+var logger = require("logger");
 var moveAction = require("action_move");
 var intentsUtil = require("util_intents");
 var Possibility = require("possibility");
@@ -48,7 +49,7 @@ module.exports = {
                 if (this.gclAllowsClaiming()) {
                     this.claimRoom(creep);
                 } else {
-                    Game.notify("Waiting for free GCL in order to claim room " + creep.pos.roomName);
+                    logger.notify("Waiting for free GCL in order to claim room " + creep.pos.roomName);
                 }
             } else {
                 moveAction.start(creep, 1, target.pos);
@@ -65,10 +66,10 @@ module.exports = {
     claimRoom: function(creep) {
         var claimResult = creep.claimController(creep.room.controller);
         if (claimResult == OK) {
-            Game.notify("Room " + creep.pos.roomName + " was claimed.");
+            logger.notify("Room " + creep.pos.roomName + " was claimed.");
             Game.flags[creep.memory.intentStatus.flagName].remove();
         } else {
-            Game.notify("Could not claim " + creep.pos.roomName + ", error " + claimResult);
+            logger.notifyError("Could not claim " + creep.pos.roomName, claimResult);
         }
         intentsUtil.finish(creep, this, claimResult);
     }

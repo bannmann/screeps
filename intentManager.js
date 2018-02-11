@@ -1,3 +1,4 @@
+var logger = require("logger");
 var intents = require("intents");
 var intentsUtil = require("util_intents");
 var races = require("races");
@@ -33,7 +34,7 @@ module.exports.processIntents = function() {
                 _.each(possibilities,
                     (current) => {
                         if (current.importance < 0 || current.importance > 1) {
-                            Game.notify(
+                            logger.notify(
                                 "Illegal importance value of " + current.importance + " for possibility choice " +
                                 JSON.stringify(current));
                             current.importance = 0;
@@ -47,7 +48,7 @@ module.exports.processIntents = function() {
                     creep.logDebug("chosing " + JSON.stringify(possibility));
                     possibility.choose();
                 } else {
-                    Game.notify(
+                    logger.notify(
                         "found no suitable intent for creep " + creep.name + ", memory " +
                         JSON.stringify(creep.memory));
                 }

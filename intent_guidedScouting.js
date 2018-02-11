@@ -1,3 +1,4 @@
+var logger = require("logger");
 var moveAction = require("action_move");
 var intentsUtil = require("util_intents");
 var Possibility = require("possibility");
@@ -31,7 +32,7 @@ module.exports = {
             moveAction.perform(creep);
         }
         else {
-            Game.notify("Scout " + creep.name + " reached " + creep.pos + " at age " + creep.ticksLived);
+            logger.notify("Scout " + creep.name + " reached " + creep.pos + " at age " + creep.ticksLived);
             intentsUtil.reset(creep);
         }
     }

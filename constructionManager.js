@@ -107,11 +107,11 @@ module.exports = {
 
             var hasNoConstructionSite = !(constructionSites[x][y]);
             if (isFree && hasNoConstructionSite) {
-                var created = room.createConstructionSite(x, y, STRUCTURE_EXTENSION);
-                if (created != OK) {
-                    Game.notify(
-                        "ConstructionManager encountered createConstructionSite result of " + created + " in room " +
-                        room.name);
+                var createResult = room.createConstructionSite(x, y, STRUCTURE_EXTENSION);
+                if (createResult != OK) {
+                    logger.notifyError(
+                        "Failed to create construction site at " + x + "," + y + " in room " + room.name,
+                        createResult);
                 }
                 sitesFound++;
             }
@@ -126,7 +126,7 @@ module.exports = {
 
             siteIndexGlobal++;
             if (siteIndexGlobal > SITE_SEARCH_LIMIT) {
-                Game.notify("ConstructionManager could not find enough sites in room " + room.name);
+                logger.notify("ConstructionManager could not find enough sites in room " + room.name);
                 break;
             }
         }
@@ -220,9 +220,9 @@ module.exports = {
             if (structure.structureType != STRUCTURE_STORAGE) {
                 var destroyResult = structure.destroy();
                 if (destroyResult != OK) {
-                    Game.notify(
+                    logger.notifyError(
                         "ConstructionManager could not destroy enemy structure " + structure.id +
-                        " in room " + room.name + ", error " + destroyResult);
+                        " in room " + room.name, destroyResult);
                 }
             }
         });
@@ -231,7 +231,7 @@ module.exports = {
         var sources = room.find(FIND_SOURCES);
         switch(sources.length) {
             case 0:
-                Game.notify("ConstructionManager could not place spawn, no sources found");
+                logger.notify("ConstructionManager could not place spawn, no sources found");
                 break;
             case 1:
                 var pathFinderResult = PathFinder.search(sources[0].pos, {pos: room.controller.pos, range: 1});
@@ -323,8 +323,8 @@ module.exports = {
                 logger.log("Created spawn at " + spawnPosition);
             }
             else {
-                Game.notify(
-                    "ConstructionManager could not place spawn at " + spawnPosition + ", error " + siteResult);
+                logger.notifyError(
+                    "ConstructionManager could not place spawn at " + spawnPosition, siteResult);
             }
         }
     }

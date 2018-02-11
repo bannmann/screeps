@@ -1,3 +1,4 @@
+var logger = require("logger");
 var enemyDirectory = require("enemyDirectory");
 
 module.exports = {
@@ -31,9 +32,9 @@ module.exports = {
     activate: function(room) {
         var result = room.controller.activateSafeMode();
         if (result == OK) {
-            Game.notify("Activated safe mode for room " + room.name);
+            logger.notify("Activated safe mode for room " + room.name);
         } else {
-            Game.notify("Could not activate safe mode for room " + room.name + ", error " + result);
+            logger.notifyError("Could not activate safe mode for room " + room.name, result);
         }
     }
 };
