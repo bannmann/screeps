@@ -106,13 +106,18 @@ module.exports = {
             var isFree = this.isFree(room, x, y);
 
             var hasNoConstructionSite = !(constructionSites[x][y]);
-            if (isFree && hasNoConstructionSite) {
+            if (isFree && hasNoConstructionSite && this.isValidExtensionPos(x, y, constructionSites, spawn) &&
+                this.wouldNotBlock(x, y, room)) {
                 var createResult = room.createConstructionSite(x, y, STRUCTURE_EXTENSION);
                 if (createResult != OK) {
                     logger.notifyError(
                         "Failed to create construction site at " + x + "," + y + " in room " + room.name,
                         createResult);
                 }
+
+                // Allow subsequent iterations in this tick to place a neighboring extension
+                constructionSites[x][y] = { structureType: STRUCTURE_EXTENSION, dummy: true };
+
                 sitesFound++;
             }
 
@@ -125,10 +130,6 @@ module.exports = {
             }
 
             siteIndexGlobal++;
-            if (siteIndexGlobal > SITE_SEARCH_LIMIT) {
-                logger.notify("ConstructionManager could not find enough sites in room " + room.name);
-                break;
-            }
         }
     },
 
@@ -150,18 +151,18 @@ module.exports = {
     },
 
     isFree: function(room, x, y) {
-        return this.hasNoStructure(room, x, y) && !this.isBlockingSource(room, x, y);
+        return !this.isBlocked(room, x, y) && !this.wouldBlockSource(room, x, y);
     },
 
-    hasNoStructure: function(room, x, y) {
+    isBlocked: function(room, x, y) {
         var result = _.filter(
                 room.lookAt(x, y), (entry) => {
                     return entry.type == LOOK_TERRAIN && entry.terrain == "wall" || entry.type == LOOK_STRUCTURES;
-                }).length == 0;
+                }).length > 0;
         return result;
     },
 
-    isBlockingSource: function(room, x, y) {
+    wouldBlockSource: function(room, x, y) {
         var result = false;
         var sourceObjects = room.find(FIND_SOURCES);
         _.each(
@@ -171,6 +172,32 @@ module.exports = {
                 }
             });
         return result;
+    },
+
+    isValidExtensionPos: function(x, y, constructionSites, spawn) {
+        return spawn.pos.isNearTo(x, y) || this.isNeighborOfExtensionSite(x, y, constructionSites, spawn.room) ||
+            this.isNeighborOfExtension(x, y, spawn.room);
+    },
+
+    isNeighborOfExtensionSite: function(x, y, constructionSites) {
+        function check(x, y) {
+            var site = constructionSites[x][y];
+            return site && site.structureType == STRUCTURE_EXTENSION;
+        }
+        return check(x + 1, y + 1) || check(x + 1, y - 1) || check(x - 1, y + 1) || check(x - 1, y - 1);
+    },
+
+    isNeighborOfExtension: function(x, y, room) {
+        function check(x, y) {
+            return _.filter(room.lookForAt(LOOK_STRUCTURES, x, y), { structureType: STRUCTURE_EXTENSION }).length == 1;
+        }
+        return check(x + 1, y + 1) || check(x + 1, y - 1) || check(x - 1, y + 1) || check(x - 1, y - 1);
+    },
+
+    wouldNotBlock: function(x, y, room) {
+        var blockedCount = 0 + this.isBlocked(room, x + 1, y) + this.isBlocked(room, x, y + 1) +
+            this.isBlocked(room, x - 1, y) + this.isBlocked(room, x, y - 1);
+        return blockedCount < 2;
     },
 
     scanWalls: function(room) {
