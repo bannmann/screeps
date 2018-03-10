@@ -53,6 +53,7 @@ module.exports.apply = function() {
     apply(StructureTower.prototype);
     apply(StructureContainer.prototype);
     apply(StructureStorage.prototype);
+    apply(Tombstone.prototype);
     apply(Resource.prototype);
     apply(Creep.prototype);
 };

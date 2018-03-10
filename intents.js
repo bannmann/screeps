@@ -10,6 +10,7 @@ const INTENT_NAMES = [
     "guidedScouting",
     "harvestEnergy",
     "idle",
+    "lootTombstone",
     "meleeAttack",
     "offensive",
     "pickupEnergy",
