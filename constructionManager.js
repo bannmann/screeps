@@ -1,18 +1,30 @@
 const CHECK_INTERVAL = 500;
-const SITE_SEARCH_LIMIT = 200;
 
 var logger = require("logger");
 var Objects = require("util_objects");
 
 module.exports = {
     manage: function() {
+        var claimedRooms = {};
+
         _.each(Game.rooms,
             (room) => {
-                if (this.isCheckScheduled(room) || this.isRoomLevelDifferent(room)) {
-                    this.checkRoom(room);
+                if (room.claimed) {
+                    if (this.isCheckScheduled(room) || this.isRoomLevelDifferent(room)) {
+                        this.checkRoom(room);
+                    }
+                    if (this.needsSpawn(room)) {
+                        this.createSpawn(room);
+                    }
+                    claimedRooms[room.name] = true;
                 }
-                if (this.needsSpawn(room)) {
-                    this.createSpawn(room);
+            });
+
+        var roomMemory = Memory.ConstructionManager.rooms;
+        _.forOwnRight(
+            roomMemory, (value, key) => {
+                if (!(key in claimedRooms)) {
+                    delete roomMemory[key];
                 }
             });
     },
@@ -38,46 +50,54 @@ module.exports = {
     },
 
     checkRoom: function(room) {
+        var structures = this.getStructures(room);
+        var constructionSites = this.getConstructionSites(room);
+        var walls = _.filter(structures, { structureType: STRUCTURE_WALL });
         var level = this.getCurrentRoomLevel(room);
-        this.ensureEnoughExtensionsExist(room, level);
-        this.scanWalls(room);
+        this.ensureEnoughExtensionsExist(room, structures, constructionSites, walls, level);
+        this.storeWalls(room, walls);
+        this.verifyTowerCount(room, structures, constructionSites, level);
         this.updateKnownRoomLevel(room);
     },
 
-    ensureEnoughExtensionsExist: function(room, level) {
-        if (level > 0) {
-            var extensions = room.find(FIND_MY_STRUCTURES, {
-                filter: { structureType: STRUCTURE_EXTENSION }
-            }).length;
-            var extensionsBeingBuilt = room.find(FIND_CONSTRUCTION_SITES, {
-                filter: { structureType: STRUCTURE_EXTENSION }
-            }).length;
-            var maxExtensionCount = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][level];
+    getStructures: function(room) {
+        return room.find(FIND_STRUCTURES);
+    },
 
-            var extensionsToBuild = maxExtensionCount - extensions - extensionsBeingBuilt;
-            if (extensionsToBuild > 0) {
-                var spawns = room.find(FIND_MY_STRUCTURES, {
-                    filter: { structureType: STRUCTURE_SPAWN }
-                });
+    getConstructionSites: function(room) {
+        return room.find(FIND_CONSTRUCTION_SITES);
+    },
 
-                if (spawns.length > 0) {
-                    var spawn = spawns[0];
+    ensureEnoughExtensionsExist: function(room, structures, constructionSites, walls, level) {
+        var extensions = _.filter(structures, { structureType: STRUCTURE_EXTENSION });
+        var extensionsBeingBuilt = _.filter(constructionSites, { structureType: STRUCTURE_EXTENSION });
+        var maxExtensionCount = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][level];
 
-                    logger.log(room.name + " gets " + extensionsToBuild + " extensions");
-                    this.createExtensions(room, extensionsToBuild, spawn);
-                }
+        var newExtensionCount = maxExtensionCount - extensions.length - extensionsBeingBuilt.length;
+        if (newExtensionCount > 0) {
+            var spawns = _.filter(structures, { structureType: STRUCTURE_SPAWN });
+            if (spawns.length > 0) {
+                logger.log(room.name + " gets " + newExtensionCount + " extensions");
+                this.createExtensions(
+                    room,
+                    newExtensionCount,
+                    extensions,
+                    extensionsBeingBuilt,
+                    constructionSites,
+                    walls,
+                    spawns[0]);
             }
         }
     },
 
-    createExtensions: function(room, extensionsToBuild, spawn) {
-        var constructionSites = this.getConstructionSites(room);
+    createExtensions: function(room, newExtensionCount, extensions, extensionsBeingBuilt, constructionSites, walls, spawn) {
+        var constructionSitePositions = this.convertToPositionArray(constructionSites);
 
         var sitesFound = 0;
         var diameter = 1;
         var siteIndexGlobal = 0;
         var siteIndexInDiameter = 0;
-        while (sitesFound < extensionsToBuild) {
+        while (sitesFound < newExtensionCount) {
             var x;
             var y;
             var sitesPerSide = diameter;
@@ -103,10 +123,10 @@ module.exports = {
                     break;
             }
 
-            var isFree = this.isFree(room, x, y);
+            var isFree = this.isFree(room, walls, x, y);
 
-            var hasNoConstructionSite = !(constructionSites[x][y]);
-            if (isFree && hasNoConstructionSite && this.isValidExtensionPos(x, y, constructionSites, spawn) &&
+            var hasNoConstructionSite = !(constructionSitePositions[x][y]);
+            if (isFree && hasNoConstructionSite && this.isValidExtensionPos(x, y, constructionSitePositions, spawn) &&
                 this.wouldNotBlock(x, y, room)) {
                 var createResult = room.createConstructionSite(x, y, STRUCTURE_EXTENSION);
                 if (createResult != OK) {
@@ -116,7 +136,7 @@ module.exports = {
                 }
 
                 // Allow subsequent iterations in this tick to place a neighboring extension
-                constructionSites[x][y] = { structureType: STRUCTURE_EXTENSION, dummy: true };
+                constructionSitePositions[x][y] = { structureType: STRUCTURE_EXTENSION, dummy: true };
 
                 sitesFound++;
             }
@@ -133,10 +153,10 @@ module.exports = {
         }
     },
 
-    getConstructionSites: function(room) {
+    convertToPositionArray: function(sites) {
         var result = this.createPositionArrays();
         _.each(
-            room.find(FIND_CONSTRUCTION_SITES), (site) => {
+            sites, (site) => {
                 result[site.pos.x][site.pos.y] = site;
             });
         return result;
@@ -150,8 +170,9 @@ module.exports = {
         return result;
     },
 
-    isFree: function(room, x, y) {
-        return !this.isBlocked(room, x, y) && !this.wouldBlockSource(room, x, y);
+    isFree: function(room, walls, x, y) {
+        return !this.isBlocked(room, x, y) && !this.wouldBlockSource(room, x, y) &&
+            !this.wouldBeCloseToWall(walls, x, y);
     },
 
     isBlocked: function(room, x, y) {
@@ -174,14 +195,18 @@ module.exports = {
         return result;
     },
 
-    isValidExtensionPos: function(x, y, constructionSites, spawn) {
-        return spawn.pos.isNearTo(x, y) || this.isNeighborOfExtensionSite(x, y, constructionSites, spawn.room) ||
+    wouldBeCloseToWall: function(walls, x, y) {
+        return _.some(walls, (wall) => wall.pos.inRangeTo(x, y, 2));
+    },
+
+    isValidExtensionPos: function(x, y, constructionSitePositions, spawn) {
+        return spawn.pos.isNearTo(x, y) || this.isNeighborOfExtensionSite(x, y, constructionSitePositions, spawn.room) ||
             this.isNeighborOfExtension(x, y, spawn.room);
     },
 
-    isNeighborOfExtensionSite: function(x, y, constructionSites) {
+    isNeighborOfExtensionSite: function(x, y, constructionSitePositions) {
         function check(x, y) {
-            var site = constructionSites[x][y];
+            var site = constructionSitePositions[x][y];
             return site && site.structureType == STRUCTURE_EXTENSION;
         }
         return check(x + 1, y + 1) || check(x + 1, y - 1) || check(x - 1, y + 1) || check(x - 1, y - 1);
@@ -200,14 +225,20 @@ module.exports = {
         return blockedCount < 2;
     },
 
-    scanWalls: function(room) {
+    storeWalls: function(room, walls) {
         var wallIds = [];
-        const wallObjects = room.find(
-            FIND_STRUCTURES, {
-                filter: {structureType: STRUCTURE_WALL}
-            });
-        _.each(wallObjects, (wall) => wallIds.push(wall.id));
+        _.each(walls, (wall) => wallIds.push(wall.id));
         Objects.savePath(Memory, ["ConstructionManager", "rooms", room.name], "wallIds", wallIds);
+    },
+
+    verifyTowerCount: function(room, structures, constructionSites, level) {
+        var towers = _.filter(structures, { structureType: STRUCTURE_TOWER });
+        var towersBeingBuilt = _.filter(constructionSites, { structureType: STRUCTURE_TOWER });
+        var maxTowerCount = CONTROLLER_STRUCTURES[STRUCTURE_TOWER][level];
+        var towerCount = towers.length + towersBeingBuilt.length;
+        if (towerCount < maxTowerCount) {
+            logger.notify(room.name + " has " + towerCount + " towers, " + maxTowerCount + " allowed");
+        }
     },
 
     updateKnownRoomLevel: function(room) {
